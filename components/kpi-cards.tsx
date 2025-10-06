@@ -5,19 +5,22 @@ interface KPICardData {
   title: string
   value: string
   change: string
-  trend: "up" | "down"
+  isPositive: boolean
   subtitle: string
 }
 
 interface KPICardsProps {
-  data: KPICardData[]
+  data?: KPICardData[]
 }
 
 
 export function KPICards({ data }: KPICardsProps) {
+
+  const kpiData = data || []
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 max-w-6xl">
-      {data.map((kpi, index) => (
+      {kpiData.map((kpi, index) => (
         <Card key={index}>
           <CardContent className="p-4 sm:p-6">
 
@@ -31,14 +34,14 @@ export function KPICards({ data }: KPICardsProps) {
 
               <div className="flex flex-col items-end space-y-1">
                 <div className="flex items-center space-x-1">
-                  {kpi.trend === "up" ? (
+                  {kpi.isPositive ? (
                     <TrendingUp className="h-4 w-4 text-green-600" />
                   ) : (
                     <TrendingDown className="h-4 w-4 text-red-600" />
                   )}
                   <span
                     className={`text-xs sm:text-sm font-medium ${
-                      kpi.trend === "up" ? "text-green-600" : "text-red-600"
+                      kpi.isPositive ? "text-green-600" : "text-red-600"
                     }`}
                   >
                     {kpi.change}

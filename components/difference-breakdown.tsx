@@ -95,7 +95,7 @@ export function DifferenceBreakdown({ data }: DifferenceBreakdownProps) {
                     {tertinggiData.map((item) => (
                       <Cell
                         key={item.category}
-                        fill={item.value >= 0 ? "var(--chart-2)" : "var(--destructive)"}
+                        fill={item.value >= 0 ? "var(--chart-2)" : "var(--chart-2)"}
                       />
                     ))}
                   </Bar>
@@ -142,7 +142,7 @@ export function DifferenceBreakdown({ data }: DifferenceBreakdownProps) {
                     {terendahData.map((item) => (
                       <Cell
                         key={item.category}
-                        fill={item.value >= 0 ? "var(--chart-2)" : "var(--destructive)"}
+                        fill={item.value >= 0 ? "var(--chart-2)" : "var(--chart-2)"}
                       />
                     ))}
                   </Bar>
@@ -203,7 +203,7 @@ export function DifferenceBreakdown({ data }: DifferenceBreakdownProps) {
                     {trendData.map((item) => (
                       <Cell
                         key={item.date}
-                        fill={item.value >= 0 ? "var(--chart-2)" : "var(--destructive)"}
+                        fill={item.value >= 0 ? "var(--chart-2)" : "var(--chart-2)"}
                       />
                     ))}
                   </Bar>

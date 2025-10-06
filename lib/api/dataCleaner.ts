@@ -22,21 +22,21 @@ export function cleanKPIData(rawData: any) {
       title: "Total Pendapatan JKN",
       value: toIDR(rawData.pendapatan.pendapatan),
       change: `${rawData.pendapatan.persentase_perubahan}%`,
-      trend: rawData.pendapatan.persentase_perubahan >= 0 ? "up" : "down",
+      isPositive: rawData.pendapatan.persentase_perubahan >= 0,
       subtitle: "Bulan Ini",
     },
     {
       title: "Total Selisih JKN",
       value: toIDR(rawData.selisih.selisih),
       change: `${rawData.selisih.persentase_perubahan}%`,
-      trend: rawData.selisih.persentase_perubahan >= 0 ? "up" : "down",
+      isPositive: rawData.selisih.persentase_perubahan >= 0,
       subtitle: "Bulan Ini",
     },
     {
       title: "Total Penerimaan JKN",
       value: toIDR(rawData.penerimaan.penerimaan),
       change: `${rawData.penerimaan.persentase_perubahan}%`,
-      trend: rawData.penerimaan.persentase_perubahan >= 0 ? "up" : "down",
+      isPositive: rawData.penerimaan.persentase_perubahan >= 0,
       subtitle: "Bulan Ini",
     },
   ];
@@ -163,11 +163,11 @@ export function cleanRevenueDistribution(rawData: any) {
       const value = parseFloat(item.pendapatan);
       if (isNaN(value) || value <= 0) return null;
 
-      const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+      const percentage = total > 0 ? Math.round((value / total) * 1000) / 10 : 0;
 
       return {
         name: item.kategori,
-        value: parseFloat(percentage),
+        value: percentage,
         rawValue: value,
         formattedValue: toIDR(value),
         fill: chartColors[index % chartColors.length],
