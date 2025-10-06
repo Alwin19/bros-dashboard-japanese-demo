@@ -1,21 +1,41 @@
 "use client"
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ResponsiveContainer, PieChart, Pie, Cell } from "recharts"
+import { LabelList, PieChart, Pie } from "recharts"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
+} from "@/components/ui/chart"
 
-const pieData = [
-  { name: "Rawat Inap", value: 45, color: "hsl(var(--chart-1))" },
-  { name: "Rawat Jalan", value: 30, color: "hsl(var(--chart-2))" },
-  { name: "IGD", value: 25, color: "hsl(var(--chart-3))" },
-]
+interface DistributionItem {
+  name: string
+  value: number
+  rawValue: number
+  formattedValue: string
+  fill: string
+}
 
-export function RevenueDistribution() {
+interface RevenueDistributionProps {
+  data?: {
+    distribution: DistributionItem[]
+    chartConfig: any
+  }
+}
+
+export function RevenueDistribution({ data }: RevenueDistributionProps) {
+  const pieData = data?.distribution || []
+  const chartConfig = data?.chartConfig || {}
+
   return (
-    <Card className="h-[400px]">
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="text-lg font-semibold">Distribusi Pendapatan JKN</CardTitle>
+    <Card className="h-full flex flex-col">
+      <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
+        <CardTitle className="text-base sm:text-lg font-semibold">Distribusi Pendapatan JKN</CardTitle>
         <Select defaultValue="semua-unit">
-          <SelectTrigger className="w-32">
+          <SelectTrigger className="w-full sm:w-32 text-xs sm:text-sm">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -24,20 +44,48 @@ export function RevenueDistribution() {
           </SelectContent>
         </Select>
       </CardHeader>
-      <CardContent className="h-full">
-        <div className="w-full h-full flex items-center justify-center">
-          <div className="aspect-square w-full max-w-[250px] max-h-[250px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie data={pieData} cx="50%" cy="50%" outerRadius="90%" dataKey="value">
-                  {pieData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-              </PieChart>
-            </ResponsiveContainer>
+      <CardContent className="flex-1 flex flex-col items-center justify-center">
+        {pieData.length > 0 ? (
+          <ChartContainer config={chartConfig} className="mx-auto aspect-square w-full max-w-[250px] sm:max-w-[300px]">
+            <PieChart>
+              <ChartTooltip 
+                content={
+                  <ChartTooltipContent 
+                    hideLabel 
+                    formatter={(value, name, props) => (
+                      <>
+                        <div className="font-medium">{props.payload.name}</div>
+                        <div className="text-muted-foreground">
+                          {props.payload.formattedValue} ({value}%)
+                        </div>
+                      </>
+                    )}
+                  />
+                } 
+              />
+              <Pie
+                data={pieData}
+                dataKey="value"
+                nameKey="name"
+                outerRadius="90%"
+              >
+                <LabelList
+                  dataKey="value"
+                  className="fill-background"
+                  fill="white"
+                  stroke="none"
+                  fontSize={14}
+                  formatter={(value: number) => `${value}%`}
+                />
+              </Pie>
+              <ChartLegend content={<ChartLegendContent />} />
+            </PieChart>
+          </ChartContainer>
+        ) : (
+          <div className="flex items-center justify-center h-full">
+            <p className="text-sm text-muted-foreground">Tidak ada data</p>
           </div>
-        </div>
+        )}
       </CardContent>
     </Card>
   )

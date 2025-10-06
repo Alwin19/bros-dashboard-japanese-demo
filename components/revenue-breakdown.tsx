@@ -1,60 +1,157 @@
 "use client"
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer } from "recharts"
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 
-const revenueData = [
-  { category: "Rawat Inap", tertinggi: 45, terendah: 35 },
-  { category: "Rawat Jalan", tertinggi: 30, terendah: 25 },
-  { category: "IGD", tertinggi: 20, terendah: 15 },
-  { category: "Poli Umum", tertinggi: 15, terendah: 10 },
-  { category: "Poli Anak", tertinggi: 12, terendah: 8 },
-]
+interface ChartDataItem {
+  category?: string
+  date?: string
+  fullDate?: string
+  value: number
+  formattedValue: string
+}
 
-const trendData = [
-  { date: "5 Sep", value: 25 },
-  { date: "10 Sep", value: 30 },
-  { date: "15 Sep", value: 35 },
-  { date: "20 Sep", value: 32 },
-  { date: "25 Sep", value: 38 },
-  { date: "30 Sep", value: 35 },
-]
+interface RevenueBreakdownProps {
+  data?: {
+    tertinggi?: ChartDataItem[]
+    terendah?: ChartDataItem[]
+    trend?: ChartDataItem[]
+  }
+}
 
-export function RevenueBreakdown() {
+const chartConfig = {
+  pendapatan: {
+    label: "Pendapatan",
+    color: "var(--chart-1)",
+  },
+  value: {
+    label: "Pendapatan",
+    color: "var(--chart-1)",
+  },
+}
+
+// Fallback formatter (always available in client)
+const toIDRScale = (value: number) => {
+  if (value >= 1000000000) {
+    return `${(value / 1000000000).toFixed(1)} M`; // Miliar
+  } else if (value >= 1000000) {
+    return `${(value / 1000000).toFixed(1)} Jt`; // Juta
+  } else if (value >= 1000) {
+    return `${(value / 1000).toFixed(0)} Rb`; // Ribu
+  }
+  return value.toString();
+};
+
+export function RevenueBreakdown({ data }: RevenueBreakdownProps) {
+  
+  const tertinggiData = data?.tertinggi || []
+  const terendahData = data?.terendah || []
+  const trendData = data?.trend || []
+
   return (
-    <Card className="h-[400px]">
-      <CardHeader>
-        <CardTitle className="text-lg font-semibold">Breakdown Pendapatan JKN</CardTitle>
+    <Card className="h-full">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-base md:text-lg font-semibold">Breakdown Pendapatan JKN</CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="flex gap-6 h-full">
-          <div className="flex-1 min-h-[200px]">
-            <h4 className="text-sm font-medium mb-4 text-muted-foreground">Pendapatan JKN Tertinggi</h4>
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={revenueData} layout="horizontal">
-                <XAxis type="number" domain={[0, 50]} />
-                <YAxis dataKey="category" type="category" width={80} fontSize={12} />
-                <Bar dataKey="tertinggi" fill="hsl(var(--chart-1))" radius={[0, 4, 4, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+      <CardContent className="p-4 md:p-6">
+        <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
+
+          {/* Tertinggi Chart */}
+          <div className="flex-1 min-w-0">
+            <h4 className="text-xs md:text-sm font-medium mb-3 md:mb-4 text-muted-foreground">
+              Pendapatan JKN Tertinggi
+            </h4>
+            {tertinggiData.length > 0 ? (
+              <ChartContainer config={chartConfig} className="w-full h-[180px] md:h-[220px] max-w-[400px] justify-self-center">
+                <BarChart
+                  data={tertinggiData} 
+                  layout="vertical" 
+                  margin={{ top: 0, right: 10, left: -15, bottom: -15 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} />
+                  <XAxis 
+                    type="number" 
+                    tickFormatter={toIDRScale}
+                    tick={{ fontSize: 10 }}
+                  />
+                  <YAxis 
+                    dataKey="category" 
+                    type="category" 
+                    width={100}
+                    tick={{ fontSize: 11 }}
+                  />
+                  <ChartTooltip 
+                    content={<ChartTooltipContent 
+                      formatter={(value, name, props) => props.payload.formattedValue}
+                    />} 
+                  />
+                  <Bar 
+                    dataKey="value" 
+                    fill="var(--color-pendapatan)" 
+                    radius={[0, 4, 4, 0]} 
+                    barSize={25}
+                  />
+                </BarChart>
+              </ChartContainer>
+            ) : (
+              <div className="w-full h-[180px] md:h-[220px] flex items-center justify-center bg-muted/20 rounded-md">
+                <p className="text-sm text-muted-foreground">Tidak ada data</p>
+              </div>
+            )}
           </div>
 
-          <div className="flex-1 min-h-[200px]">
-            <h4 className="text-sm font-medium mb-4 text-muted-foreground">Pendapatan JKN Terendah</h4>
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={revenueData} layout="horizontal">
-                <XAxis type="number" domain={[0, 50]} />
-                <YAxis dataKey="category" type="category" width={80} fontSize={12} />
-                <Bar dataKey="terendah" fill="hsl(var(--chart-2))" radius={[0, 4, 4, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+          {/* Terendah Chart */}
+          <div className="flex-1 min-w-0">
+            <h4 className="text-xs md:text-sm font-medium mb-3 md:mb-4 text-muted-foreground">
+              Pendapatan JKN Terendah
+            </h4>
+            {terendahData.length > 0 ? (
+              <ChartContainer config={chartConfig} className="w-full h-[180px] md:h-[220px] max-w-[400px] justify-self-center">
+                <BarChart 
+                  data={terendahData} 
+                  layout="vertical" 
+                  margin={{ top: 0, right: 10, left: -15, bottom: -15 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} />
+                  <XAxis 
+                    type="number" 
+                    tickFormatter={toIDRScale}
+                    tick={{ fontSize: 10 }}
+                  />
+                  <YAxis 
+                    dataKey="category" 
+                    type="category" 
+                    width={100}
+                    tick={{ fontSize: 11 }}
+                  />
+                  <ChartTooltip 
+                    content={<ChartTooltipContent 
+                      formatter={(value, name, props) => props.payload.formattedValue}
+                    />} 
+                  />
+                  <Bar 
+                    dataKey="value" 
+                    fill="var(--color-pendapatan)" 
+                    radius={[0, 4, 4, 0]}
+                    barSize={25}
+                  />
+                </BarChart>
+              </ChartContainer>
+            ) : (
+              <div className="w-full h-[180px] md:h-[220px] flex items-center justify-center bg-muted/20 rounded-md">
+                <p className="text-sm text-muted-foreground">Tidak ada data</p>
+              </div>
+            )}
           </div>
 
-          <div className="flex-[2] min-h-[200px]">
-            <div className="flex items-center justify-between mb-4">
-              <h4 className="text-sm font-medium mb-4 text-muted-foreground">Trend</h4>
+          {/* Trend Chart */}
+          <div className="flex-1 min-w-0 lg:flex-[2]">
+            <div className="flex items- justify-between mb-3 md:mb-4">
+              <h4 className="text-xs md:text-sm font-medium text-muted-foreground">Trend</h4>
               <Select defaultValue="semua-unit">
-                <SelectTrigger className="w-32">
+                <SelectTrigger className="w-28 md:w-32 h-8 md:h-10 text-xs md:text-sm">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -63,13 +160,47 @@ export function RevenueBreakdown() {
                 </SelectContent>
               </Select>
             </div>
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={trendData}>
-                <XAxis dataKey="date" fontSize={12} />
-                <YAxis domain={[0, 40]} fontSize={12} />
-                <Bar dataKey="value" fill="hsl(var(--chart-1))" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+            {trendData.length > 0 ? (
+              <ChartContainer config={chartConfig} className="w-full h-[180px] md:h-[220px]">
+                <BarChart 
+                  data={trendData}
+                  margin={{ top: 0, right: 10, left:-10, bottom: -30 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis 
+                    dataKey="date" 
+                    tick={{ fontSize: 8 }}
+                    angle={-45}
+                    textAnchor="end"
+                    height={60}
+                  />
+                  <YAxis 
+                    tickFormatter={toIDRScale}
+                    tick={{ fontSize: 10 }}
+                  />
+                  <ChartTooltip 
+                    content={<ChartTooltipContent 
+                      formatter={(value, name, props) => props.payload.formattedValue}
+                      labelFormatter={(label, payload) => {
+                        if (payload && payload.length > 0) {
+                          return payload[0].payload.fullDate
+                        }
+                        return label
+                      }}
+                    />} 
+                  />
+                  <Bar 
+                    dataKey="value" 
+                    fill="var(--color-value)" 
+                    radius={[2, 2, 0, 0]} 
+                  />
+                </BarChart>
+              </ChartContainer>
+            ) : (
+              <div className="w-full h-[180px] md:h-[220px] flex items-center justify-center bg-muted/20 rounded-md">
+                <p className="text-sm text-muted-foreground">Tidak ada data</p>
+              </div>
+            )}
           </div>
         </div>
       </CardContent>

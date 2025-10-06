@@ -1,39 +1,57 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
-const paymentMethods = [
-  { method: "Cash", amount: "Rp 8.000.000.000" },
-  { method: "Credit Card", amount: "Rp 6.200.000" },
-  { method: "Debit Card", amount: "Rp 3.285.000" },
-  { method: "Bank Transfer", amount: "Rp 2.785.000" },
-  { method: "Piutang", amount: "Rp 1.345.000" },
-  { method: "Deposit OJT", amount: "Rp 1.285.000" },
-]
+interface ReceiptItem {
+  method: string
+  amount: number
+  formattedAmount: string
+}
 
-export function RevenueReceipts() {
+interface RevenueReceiptsProps {
+  data?: ReceiptItem[]
+}
+
+export function RevenueReceipts({ data }: RevenueReceiptsProps) {
+  const receipts = data || []
+
   return (
-    <Card className="h-[400px]">
+    <Card className="h-full flex flex-col">
       <CardHeader>
-        <CardTitle className="text-lg font-semibold">Penerimaan JKN</CardTitle>
+        <CardTitle className="text-base sm:text-lg font-semibold">Penerimaan JKN</CardTitle>
       </CardHeader>
-      <CardContent className="overflow-hidden">
-        <div className="overflow-auto max-h-[300px]">
-          <table className="w-full">
-            <thead>
-              <tr className="bg-primary text-primary-foreground">
-                <th className="text-left px-3 py-2 text-sm font-medium rounded-l">Metode</th>
-                <th className="text-right px-3 py-2 text-sm font-medium rounded-r">Jumlah</th>
-              </tr>
-            </thead>
-            <tbody>
-              {paymentMethods.map((method, index) => (
-                <tr key={index} className="hover:bg-muted border-b border-border/50">
-                  <td className="px-3 py-2 text-sm text-foreground">{method.method}</td>
-                  <td className="px-3 py-2 text-sm font-medium text-foreground text-right">{method.amount}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      <CardContent className="flex-1 overflow-hidden">
+        {receipts.length > 0 ? (
+          <div className="overflow-auto max-h-[280px] sm:max-h-[300px] text-xs sm:text-sm">
+            <Table className="w-full min-w-[150px]">
+              <TableHeader>
+                <TableRow className="bg-primary hover:bg-primary">
+                  <TableHead className="text-primary-foreground font-semibold text-sm sm:text-base lg:text-[11px]">
+                    Metode
+                  </TableHead>
+                  <TableHead className="text-primary-foreground font-semibold text-right text-sm sm:text-base lg:text-[11px]">
+                    Jumlah
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {receipts.map((receipt, index) => (
+                  <TableRow key={index}>
+                    <TableCell className="font-normal text-xs sm:text-sm lg:text-[11px] xl:text-medium">
+                      {receipt.method}
+                    </TableCell>
+                    <TableCell className="font-medium text-right text-xs sm:text-sm lg:text-[11px] xl:text-medium">
+                      {receipt.formattedAmount}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        ) : (
+          <div className="flex items-center justify-center h-full">
+            <p className="text-sm text-muted-foreground">Tidak ada data</p>
+          </div>
+        )}
       </CardContent>
     </Card>
   )

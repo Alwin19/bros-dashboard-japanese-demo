@@ -1,60 +1,166 @@
 "use client"
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer } from "recharts"
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ReferenceLine, Cell } from "recharts"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 
-const differenceData = [
-  { category: "Rawat Inap", tertinggi: 40, terendah: 35 },
-  { category: "Rawat Jalan", tertinggi: 25, terendah: 20 },
-  { category: "IGD", tertinggi: 18, terendah: 15 },
-  { category: "Poli Umum", tertinggi: 12, terendah: 10 },
-  { category: "Poli Anak", tertinggi: 10, terendah: 8 },
-]
+interface ChartDataItem {
+  category?: string
+  date?: string
+  fullDate?: string
+  value: number
+  formattedValue: string
+}
 
-const differenceTrendData = [
-  { date: "5 Sep", value: 28 },
-  { date: "10 Sep", value: -15 },
-  { date: "15 Sep", value: 32 },
-  { date: "20 Sep", value: 25 },
-  { date: "25 Sep", value: 35 },
-  { date: "30 Sep", value: 30 },
-]
+interface DifferenceBreakdownProps {
+  data?: {
+    tertinggi?: ChartDataItem[]
+    terendah?: ChartDataItem[]
+    trend?: ChartDataItem[]
+  }
+}
 
-export function DifferenceBreakdown() {
+const chartConfig = {
+  selisih: {
+    label: "Selisih",
+    color: "var(--chart-2)",
+  },
+  value: {
+    label: "Selisih",
+    color: "var(--chart-2)",
+  },
+}
+
+// Formatter that handles negative values
+const toIDRScale = (value: number) => {
+  const absValue = Math.abs(value);
+  const sign = value < 0 ? '-' : '';
+  
+  if (absValue >= 1000000000) {
+    return `${sign}${(absValue / 1000000000).toFixed(1)} M`;
+  } else if (absValue >= 1000000) {
+    return `${sign}${(absValue / 1000000).toFixed(1)} Jt`;
+  } else if (absValue >= 1000) {
+    return `${sign}${(absValue / 1000).toFixed(0)} Rb`;
+  }
+  return value.toString();
+};
+
+export function DifferenceBreakdown({ data }: DifferenceBreakdownProps) {
+  
+  const tertinggiData = data?.tertinggi || []
+  const terendahData = data?.terendah || []
+  const trendData = data?.trend || []
+
   return (
-    <Card className="h-[400px]">
-      <CardHeader>
-        <CardTitle className="text-lg font-semibold">Breakdown Selisih JKN</CardTitle>
+    <Card className="h-full">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-base md:text-lg font-semibold">Breakdown Selisih JKN</CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="flex gap-6 h-full">
-          <div className="flex-1 min-h-[200px]">
-            <h4 className="text-sm font-medium mb-4 text-muted-foreground">Selisih JKN Tertinggi</h4>
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={differenceData} layout="horizontal">
-                <XAxis type="number" domain={[0, 45]} />
-                <YAxis dataKey="category" type="category" width={80} fontSize={12} />
-                <Bar dataKey="tertinggi" fill="hsl(var(--chart-3))" radius={[0, 4, 4, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+      <CardContent className="p-4 md:p-6">
+        <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
+
+          {/* Tertinggi Chart */}
+          <div className="flex-1 min-w-0">
+            <h4 className="text-xs md:text-sm font-medium mb-3 md:mb-4 text-muted-foreground">
+              Selisih JKN Tertinggi
+            </h4>
+            {tertinggiData.length > 0 ? (
+              <ChartContainer config={chartConfig} className="w-full h-[180px] md:h-[220px] max-w-[400px] justify-self-center">
+                <BarChart
+                  data={tertinggiData} 
+                  layout="vertical" 
+                   margin={{ top: 0, right: 10, left: -15, bottom: -15 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} />
+                  <XAxis 
+                    type="number"
+                    tickFormatter={toIDRScale}
+                    tick={{ fontSize: 10 }}
+                  />
+                  <YAxis 
+                    dataKey="category" 
+                    type="category" 
+                    width={100}
+                    tick={{ fontSize: 11 }}
+                  />
+                  <ReferenceLine x={0} stroke="hsl(var(--border))" strokeWidth={1} />
+                  <ChartTooltip 
+                    content={<ChartTooltipContent 
+                      formatter={(value, name, props) => props.payload.formattedValue}
+                    />} 
+                  />
+                  <Bar dataKey="value" radius={[0, 4, 4, 0]} barSize={25}>
+                    {tertinggiData.map((item) => (
+                      <Cell
+                        key={item.category}
+                        fill={item.value >= 0 ? "var(--chart-2)" : "var(--destructive)"}
+                      />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ChartContainer>
+            ) : (
+              <div className="w-full h-[180px] md:h-[220px] flex items-center justify-center bg-muted/20 rounded-md">
+                <p className="text-sm text-muted-foreground">Tidak ada data</p>
+              </div>
+            )}
           </div>
 
-          <div className="flex-1 min-h-[200px]">
-            <h4 className="text-sm font-medium mb-4 text-muted-foreground">Selisih JKN Terendah</h4>
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={differenceData} layout="horizontal">
-                <XAxis type="number" domain={[0, 45]} />
-                <YAxis dataKey="category" type="category" width={80} fontSize={12} />
-                <Bar dataKey="terendah" fill="hsl(var(--chart-4))" radius={[0, 4, 4, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+          {/* Terendah Chart */}
+          <div className="flex-1 min-w-0">
+            <h4 className="text-xs md:text-sm font-medium mb-3 md:mb-4 text-muted-foreground">
+              Selisih JKN Terendah
+            </h4>
+            {terendahData.length > 0 ? (
+              <ChartContainer config={chartConfig} className="w-full h-[180px] md:h-[220px] max-w-[400px] justify-self-center">
+                <BarChart 
+                  data={terendahData} 
+                  layout="vertical" 
+                   margin={{ top: 0, right: 10, left: -15, bottom: -15 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} />
+                  <XAxis 
+                    type="number"
+                    tickFormatter={toIDRScale}
+                    tick={{ fontSize: 10 }}
+                  />
+                  <YAxis 
+                    dataKey="category" 
+                    type="category" 
+                    width={100}
+                    tick={{ fontSize: 11 }}
+                  />
+                  <ReferenceLine x={0} stroke="hsl(var(--border))" strokeWidth={1} />
+                  <ChartTooltip 
+                    content={<ChartTooltipContent 
+                      formatter={(value, name, props) => props.payload.formattedValue}
+                    />} 
+                  />
+                  <Bar dataKey="value" radius={[0, 4, 4, 0]} barSize={25}>
+                    {terendahData.map((item) => (
+                      <Cell
+                        key={item.category}
+                        fill={item.value >= 0 ? "var(--chart-2)" : "var(--destructive)"}
+                      />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ChartContainer>
+            ) : (
+              <div className="w-full h-[180px] md:h-[220px] flex items-center justify-center bg-muted/20 rounded-md">
+                <p className="text-sm text-muted-foreground">Tidak ada data</p>
+              </div>
+            )}
           </div>
 
-          <div className="flex-[2] min-h-[200px]">
-            <div className="flex items-center justify-between mb-4">
-              <h4 className="text-sm font-medium mb-4 text-muted-foreground">Trend</h4>
+          {/* Trend Chart */}
+          <div className="flex-1 min-w-0 lg:flex-[2]">
+            <div className="flex items-start justify-between mb-3 md:mb-4">
+              <h4 className="text-xs md:text-sm font-medium text-muted-foreground">Trend</h4>
               <Select defaultValue="semua-unit">
-                <SelectTrigger className="w-32">
+                <SelectTrigger className="w-28 md:w-32 h-8 md:h-10 text-xs md:text-sm">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -63,13 +169,51 @@ export function DifferenceBreakdown() {
                 </SelectContent>
               </Select>
             </div>
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={differenceTrendData}>
-                <XAxis dataKey="date" fontSize={12} />
-                <YAxis domain={[-20, 40]} fontSize={12} />
-                <Bar dataKey="value" fill="hsl(var(--chart-2))" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+            {trendData.length > 0 ? (
+              <ChartContainer config={chartConfig} className="w-full h-[180px] md:h-[220px]">
+                <BarChart 
+                  data={trendData}
+                  margin={{ top: 0, right: 10, left:-10, bottom: -30 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis 
+                    dataKey="date" 
+                    tick={{ fontSize: 8 }}
+                    angle={-45}
+                    textAnchor="end"
+                    height={60}
+                  />
+                  <YAxis 
+                    tickFormatter={toIDRScale}
+                    tick={{ fontSize: 10 }}
+                  />
+                  <ReferenceLine y={0} stroke="hsl(var(--border))" strokeWidth={2} />
+                  <ChartTooltip 
+                    content={<ChartTooltipContent 
+                      formatter={(value, name, props) => props.payload.formattedValue}
+                      labelFormatter={(label, payload) => {
+                        if (payload && payload.length > 0) {
+                          return payload[0].payload.fullDate
+                        }
+                        return label
+                      }}
+                    />} 
+                  />
+                  <Bar dataKey="value" radius={[2, 2, 0, 0]}>
+                    {trendData.map((item) => (
+                      <Cell
+                        key={item.date}
+                        fill={item.value >= 0 ? "var(--chart-2)" : "var(--destructive)"}
+                      />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ChartContainer>
+            ) : (
+              <div className="w-full h-[180px] md:h-[220px] flex items-center justify-center bg-muted/20 rounded-md">
+                <p className="text-sm text-muted-foreground">Tidak ada data</p>
+              </div>
+            )}
           </div>
         </div>
       </CardContent>
