@@ -11,40 +11,44 @@ export const getKPIData = async (
 ) => {
   return unstable_cache(
     async () => {
-      const params = `hospital_id=${hospitalId}&start_date=${startDate}&end_date=${endDate}`;
+      try {
+        const params = `hospital_id=${hospitalId}&start_date=${startDate}&end_date=${endDate}`;
 
-      const [pendapatanRes, selisihRes, penerimaanRes] = await Promise.all([
-        fetch(`${BASE_URL}/dashboard/keuangan/totalPendapatanJKN?${params}`, {
-          next: { revalidate: 86400 },
-        }),
-        fetch(`${BASE_URL}/dashboard/keuangan/totalSelisihJKN?${params}`, {
-          next: { revalidate: 86400 },
-        }),
-        fetch(`${BASE_URL}/dashboard/keuangan/totalPenerimaan?${params}`, {
-          next: { revalidate: 86400 },
-        }),
-      ]);
+        const [pendapatanRes, selisihRes, penerimaanRes] = await Promise.all([
+          fetch(`${BASE_URL}/dashboard/keuangan/totalPendapatanJKN?${params}`, {
+            next: { revalidate: 86400 },
+          }),
+          fetch(`${BASE_URL}/dashboard/keuangan/totalSelisihJKN?${params}`, {
+            next: { revalidate: 86400 },
+          }),
+          fetch(`${BASE_URL}/dashboard/keuangan/totalPenerimaan?${params}`, {
+            next: { revalidate: 86400 },
+          }),
+        ]);
 
-      if (!pendapatanRes.ok || !selisihRes.ok || !penerimaanRes.ok) {
-        throw new Error("Failed to fetch KPI data");
+        if (!pendapatanRes.ok || !selisihRes.ok || !penerimaanRes.ok) {
+          throw new Error(`API error: ${pendapatanRes.status}`);
+        }
+
+        const [pendapatan, selisih, penerimaan] = await Promise.all([
+          pendapatanRes.json(),
+          selisihRes.json(),
+          penerimaanRes.json(),
+        ]);
+
+        const rawData = {
+          pendapatan: pendapatan.data || {},
+          selisih: selisih.data || {},
+          penerimaan: penerimaan.data || {},
+        };
+
+        return cleanKPIData(rawData);
+        
+      } catch (error) {
+        console.error("KPI data error:", error);
+        return [];
       }
-
-      const [pendapatan, selisih, penerimaan] = await Promise.all([
-        pendapatanRes.json(),
-        selisihRes.json(),
-        penerimaanRes.json(),
-      ]);
-
-      const rawData = {
-        pendapatan: pendapatan.data,
-        selisih: selisih.data,
-        penerimaan: penerimaan.data,
-      };
-
-      // Clean and return ready-to-use data
-      return cleanKPIData(rawData);
     },
-    // ✅ Cache key includes all parameters
     ["kpi-data", hospitalId, startDate, endDate],
     {
       revalidate: 86400,

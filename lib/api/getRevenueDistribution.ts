@@ -10,25 +10,27 @@ export const getRevenueDistribution = async (
 ) => {
   return unstable_cache(
     async () => {
-      const params = `hospital_id=${hospitalId}&start_date=${startDate}&end_date=${endDate}&unit=all`;
+      try {
+        const params = `hospital_id=${hospitalId}&start_date=${startDate}&end_date=${endDate}&unit=all`;
 
-      const res = await fetch(
-        `${BASE_URL}/dashboard/keuangan/pendapatanJKN/distribusi?${params}`,
-        {
-          next: { revalidate: 86400 },
-        }
-      );
+        const res = await fetch(
+          `${BASE_URL}/dashboard/keuangan/pendapatanJKN/distribusi?${params}`,
+          {
+            next: { revalidate: 86400 },
+          }
+        );
 
-      if (!res.ok) {
-        throw new Error("Failed to fetch revenue distribution data");
+        if (!res.ok) throw new Error(`API error: ${res.status}`);
+
+        const data = await res.json();
+        
+        return cleanRevenueDistribution(data.data || []);
+        
+      } catch (error) {
+        console.error("Revenue distribution error:", error);
+        return { distribution: [], chartConfig: {} };
       }
-
-      const data = await res.json();
-
-      // Clean and return ready-to-use data
-      return cleanRevenueDistribution(data.data);
     },
-    // Cache key includes all parameters
     ["revenue-distribution", hospitalId, startDate, endDate],
     {
       revalidate: 86400,

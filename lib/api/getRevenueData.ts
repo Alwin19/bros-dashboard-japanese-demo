@@ -10,44 +10,46 @@ export const getRevenueData = async (
 ) => {
   return unstable_cache(
     async () => {
-      const params = `hospital_id=${hospitalId}&start_date=${startDate}&end_date=${endDate}&limit=5`;
-      const trendParams = `hospital_id=${hospitalId}&start_date=${startDate}&end_date=${endDate}&unit=all`;
+      try {
+        const params = `hospital_id=${hospitalId}&start_date=${startDate}&end_date=${endDate}&limit=5`;
+        const trendParams = `hospital_id=${hospitalId}&start_date=${startDate}&end_date=${endDate}&unit=all`;
 
-      // Fetch top, bottom, and trend in parallel
-      const [topRes, bottomRes, trendRes] = await Promise.all([
-        fetch(`${BASE_URL}/dashboard/keuangan/pendapatanJKN/top?${params}`, {
-          next: { revalidate: 86400 },
-        }),
-        fetch(`${BASE_URL}/dashboard/keuangan/pendapatanJKN/bottom?${params}`, {
-          next: { revalidate: 86400 },
-        }),
-        fetch(`${BASE_URL}/dashboard/keuangan/pendapatanJKN/trend?${trendParams}`, {
-          next: { revalidate: 86400 },
-        }),
-      ]);
+        // Fetch top, bottom, and trend in parallel
+        const [tertinggiRes, terendahRes, trendRes] = await Promise.all([
+          fetch(`${BASE_URL}/dashboard/keuangan/pendapatanJKN/top?${params}`, {
+            next: { revalidate: 86400 },
+          }),
+          fetch(`${BASE_URL}/dashboard/keuangan/pendapatanJKN/bottom?${params}`, {
+            next: { revalidate: 86400 },
+          }),
+          fetch(`${BASE_URL}/dashboard/keuangan/pendapatanJKN/trend?${trendParams}`, {
+            next: { revalidate: 86400 },
+          }),
+        ]);
 
-      if (!topRes.ok || !bottomRes.ok || !trendRes.ok) {
-        throw new Error("Failed to fetch revenue data");
+        if (!tertinggiRes.ok || !terendahRes.ok || !trendRes.ok) {
+          throw new Error(`API error: ${tertinggiRes.status}`);
+        }
+
+        const [tertinggi, terendah, trend] = await Promise.all([
+          tertinggiRes.json(),
+          terendahRes.json(),
+          trendRes.json(),
+        ]);
+
+        const rawData = {
+          tertinggi: tertinggi.data || [],
+          terendah: terendah.data || [],
+          trend: trend.data || [],
+        };
+
+        return cleanRevenueData(rawData);
+        
+      } catch (error) {
+        console.error("Revenue data error:", error);
+        return { tertinggi: [], terendah: [], trend: [] };
       }
-
-      const [topData, bottomData, trendData] = await Promise.all([
-        topRes.json(),
-        bottomRes.json(),
-        trendRes.json(),
-      ]);
-
-      const rawData = {
-        tertinggi: topData.data,
-        terendah: bottomData.data,
-        trend: trendData.data,
-      };
-
-      // Clean and return ready-to-use data
-      const cleaned = cleanRevenueData(rawData);
-          
-      return cleaned;
     },
-    // Cache key includes all parameters
     ["revenue-data", hospitalId, startDate, endDate],
     {
       revalidate: 86400,

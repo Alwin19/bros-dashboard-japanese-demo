@@ -1,7 +1,7 @@
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ReferenceLine, Cell } from "recharts"
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ReferenceLine, Cell, AreaChart, Area } from "recharts"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 
@@ -121,12 +121,13 @@ export function DifferenceBreakdown({ data }: DifferenceBreakdownProps) {
                    margin={{ top: 0, right: 10, left: -15, bottom: -15 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} />
-                  <XAxis 
+                  <XAxis
+                    reversed = {true}
                     type="number"
                     tickFormatter={toIDRScale}
                     tick={{ fontSize: 10 }}
                   />
-                  <YAxis 
+                  <YAxis
                     dataKey="category" 
                     type="category" 
                     width={100}
@@ -170,45 +171,49 @@ export function DifferenceBreakdown({ data }: DifferenceBreakdownProps) {
               </Select>
             </div>
             {trendData.length > 0 ? (
-              <ChartContainer config={chartConfig} className="w-full h-[180px] md:h-[220px]">
-                <BarChart 
-                  data={trendData}
-                  margin={{ top: 0, right: 10, left:-10, bottom: -30 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                  <XAxis 
-                    dataKey="date" 
-                    tick={{ fontSize: 8 }}
-                    angle={-45}
-                    textAnchor="end"
-                    height={60}
-                  />
-                  <YAxis 
-                    tickFormatter={toIDRScale}
-                    tick={{ fontSize: 10 }}
-                  />
-                  <ReferenceLine y={0} stroke="hsl(var(--border))" strokeWidth={2} />
-                  <ChartTooltip 
-                    content={<ChartTooltipContent 
-                      formatter={(value, name, props) => props.payload.formattedValue}
-                      labelFormatter={(label, payload) => {
-                        if (payload && payload.length > 0) {
-                          return payload[0].payload.fullDate
-                        }
-                        return label
-                      }}
-                    />} 
-                  />
-                  <Bar dataKey="value" radius={[2, 2, 0, 0]}>
-                    {trendData.map((item) => (
-                      <Cell
-                        key={item.date}
-                        fill={item.value >= 0 ? "var(--chart-2)" : "var(--chart-2)"}
-                      />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ChartContainer>
+                <ChartContainer config={chartConfig} className="w-full h-[180px] md:h-[220px]">
+                  <AreaChart 
+                    data={trendData}
+                    margin={{ top: 10, right: 10, left: -10, bottom: 0 }}
+                  >
+                    <defs>
+                      <linearGradient id="gradientDifference" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="var(--color-value)" stopOpacity={0.3}/>
+                        <stop offset="95%" stopColor="var(--color-value)" stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                    <XAxis 
+                      dataKey="date" 
+                      tick={{ fontSize: 10 }}
+                      tickMargin={5}
+                    />
+                    <YAxis
+                      reversed = {true}
+                      tickFormatter={toIDRScale}
+                      tick={{ fontSize: 10 }}
+                    />
+                    <ChartTooltip 
+                      content={<ChartTooltipContent 
+                        formatter={(value, name, props) => props.payload.formattedValue}
+                        labelFormatter={(label, payload) => {
+                          if (payload && payload.length > 0) {
+                            return payload[0].payload.fullDate
+                          }
+                          return label
+                        }}
+                      />} 
+                    />
+                    <Area 
+                      type="natural"
+                      dataKey="value" 
+                      stroke="var(--color-value)" 
+                      strokeWidth={2}
+                      fill="url(#gradientDifference)"
+                      fillOpacity={1}
+                    />
+                  </AreaChart>
+                </ChartContainer>
             ) : (
               <div className="w-full h-[180px] md:h-[220px] flex items-center justify-center bg-muted/20 rounded-md">
                 <p className="text-sm text-muted-foreground">Tidak ada data</p>

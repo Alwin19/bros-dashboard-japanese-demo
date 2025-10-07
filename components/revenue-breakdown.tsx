@@ -1,7 +1,7 @@
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts"
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, AreaChart, Area} from "recharts"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 
@@ -162,17 +162,21 @@ export function RevenueBreakdown({ data }: RevenueBreakdownProps) {
             </div>
             {trendData.length > 0 ? (
               <ChartContainer config={chartConfig} className="w-full h-[180px] md:h-[220px]">
-                <BarChart 
+                <AreaChart 
                   data={trendData}
-                  margin={{ top: 0, right: 10, left:-10, bottom: -30 }}
+                  margin={{ top: 10, right: 10, left: -10, bottom: 0 }}
                 >
+                  <defs>
+                    <linearGradient id="gradientRevenue" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="var(--color-value)" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="var(--color-value)" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
                   <XAxis 
                     dataKey="date" 
-                    tick={{ fontSize: 8 }}
-                    angle={-45}
-                    textAnchor="end"
-                    height={60}
+                    tick={{ fontSize: 10 }}
+                    tickMargin={5}
                   />
                   <YAxis 
                     tickFormatter={toIDRScale}
@@ -189,12 +193,15 @@ export function RevenueBreakdown({ data }: RevenueBreakdownProps) {
                       }}
                     />} 
                   />
-                  <Bar 
+                  <Area 
+                    type="natural"
                     dataKey="value" 
-                    fill="var(--color-value)" 
-                    radius={[2, 2, 0, 0]} 
+                    stroke="var(--color-value)" 
+                    strokeWidth={2}
+                    fill="url(#gradientRevenue)"
+                    fillOpacity={1}
                   />
-                </BarChart>
+                </AreaChart>
               </ChartContainer>
             ) : (
               <div className="w-full h-[180px] md:h-[220px] flex items-center justify-center bg-muted/20 rounded-md">

@@ -10,25 +10,27 @@ export const getRevenueReceipts = async (
 ) => {
   return unstable_cache(
     async () => {
-      const params = `hospital_id=${hospitalId}&start_date=${startDate}&end_date=${endDate}`;
+      try {
+        const params = `hospital_id=${hospitalId}&start_date=${startDate}&end_date=${endDate}`;
 
-      const res = await fetch(
-        `${BASE_URL}/dashboard/keuangan/penerimaanJKN?${params}`,
-        {
-          next: { revalidate: 86400 },
-        }
-      );
+        const res = await fetch(
+          `${BASE_URL}/dashboard/keuangan/penerimaanJKN?${params}`,
+          {
+            next: { revalidate: 86400 },
+          }
+        );
 
-      if (!res.ok) {
-        throw new Error("Failed to fetch revenue receipts data");
+        if (!res.ok) throw new Error(`API error: ${res.status}`);
+
+        const data = await res.json();
+
+        return cleanRevenueReceipts(data.data || []);
+        
+      } catch (error) {
+        console.error("Revenue receipts error:", error);
+        return [];
       }
-
-      const data = await res.json();
-
-      // Clean and return ready-to-use data
-      return cleanRevenueReceipts(data.data);
     },
-    // ✅ Cache key includes all parameters
     ["revenue-receipts", hospitalId, startDate, endDate],
     {
       revalidate: 86400,
