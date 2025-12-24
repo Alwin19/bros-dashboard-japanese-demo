@@ -62,12 +62,12 @@ export function DifferenceBreakdown({ data }: DifferenceBreakdownProps) {
         <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
 
           {/* Tertinggi Chart */}
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0 flex flex-col min-h-[240px]">
             <h4 className="text-xs md:text-sm font-medium mb-3 md:mb-4 text-muted-foreground">
               Selisih JKN Tertinggi
             </h4>
             {tertinggiData.length > 0 ? (
-              <ChartContainer config={chartConfig} className="w-full h-[180px] md:h-[220px] max-w-[400px] justify-self-center">
+              <ChartContainer config={chartConfig} className="flex-1 w-full max-w-[400px] justify-self-center">
                 <BarChart
                   data={tertinggiData} 
                   layout="vertical" 
@@ -102,19 +102,19 @@ export function DifferenceBreakdown({ data }: DifferenceBreakdownProps) {
                 </BarChart>
               </ChartContainer>
             ) : (
-              <div className="w-full h-[180px] md:h-[220px] flex items-center justify-center bg-muted/20 rounded-md">
+              <div className="flex-1 flex items-center justify-center w-full h-full bg-muted/20 rounded-md">
                 <p className="text-sm text-muted-foreground">Tidak ada data</p>
               </div>
             )}
           </div>
 
           {/* Terendah Chart */}
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0 flex flex-col min-h-[240px]">
             <h4 className="text-xs md:text-sm font-medium mb-3 md:mb-4 text-muted-foreground">
               Selisih JKN Terendah
             </h4>
             {terendahData.length > 0 ? (
-              <ChartContainer config={chartConfig} className="w-full h-[180px] md:h-[220px] max-w-[400px] justify-self-center">
+              <ChartContainer config={chartConfig} className="flex-1 w-full max-w-[400px] justify-self-center">
                 <BarChart 
                   data={terendahData} 
                   layout="vertical" 
@@ -150,14 +150,14 @@ export function DifferenceBreakdown({ data }: DifferenceBreakdownProps) {
                 </BarChart>
               </ChartContainer>
             ) : (
-              <div className="w-full h-[180px] md:h-[220px] flex items-center justify-center bg-muted/20 rounded-md">
+              <div className="flex-1 flex items-center justify-center w-full h-full bg-muted/20 rounded-md">
                 <p className="text-sm text-muted-foreground">Tidak ada data</p>
               </div>
             )}
           </div>
 
           {/* Trend Chart */}
-          <div className="flex-1 min-w-0 lg:flex-[2]">
+          <div className="flex-1 min-w-0 flex flex-col min-h-[240px]">
             <div className="flex items-start justify-between mb-3 md:mb-4">
               <h4 className="text-xs md:text-sm font-medium text-muted-foreground">Trend</h4>
               <Select defaultValue="semua-unit">
@@ -171,7 +171,7 @@ export function DifferenceBreakdown({ data }: DifferenceBreakdownProps) {
               </Select>
             </div>
             {trendData.length > 0 ? (
-                <ChartContainer config={chartConfig} className="w-full h-[180px] md:h-[220px]">
+                <ChartContainer config={chartConfig} className="flex-1 w-full max-w-[400px] justify-self-center">
                   <AreaChart 
                     data={trendData}
                     margin={{ top: 10, right: 10, left: -10, bottom: 0 }}
@@ -215,7 +215,7 @@ export function DifferenceBreakdown({ data }: DifferenceBreakdownProps) {
                   </AreaChart>
                 </ChartContainer>
             ) : (
-              <div className="w-full h-[180px] md:h-[220px] flex items-center justify-center bg-muted/20 rounded-md">
+              <div className="flex-1 flex items-center justify-center w-full h-full bg-muted/20 rounded-md">
                 <p className="text-sm text-muted-foreground">Tidak ada data</p>
               </div>
             )}

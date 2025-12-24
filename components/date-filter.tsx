@@ -12,10 +12,22 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  SelectLabel,
+  SelectGroup,
 } from "@/components/ui/select"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog"
 import { format, subDays, startOfMonth, endOfMonth, startOfYear, endOfYear, subMonths, subYears } from "date-fns"
 import { id } from "date-fns/locale"
 import { DateRange } from "react-day-picker"
+import { useMobile } from "@/hooks/use-mobile"
+
 
 type DatePreset = 
   | "bulan-ini"
@@ -107,14 +119,25 @@ export function DateFilter() {
     }
   }
 
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false)
+
   // Handle preset change
   const handlePresetChange = (value: DatePreset) => {
+    // If clicking "custom" again while already on custom, just open the calendar
+    if (value === "custom" && preset === "custom") {
+      setIsCalendarOpen(true)
+      return
+    }
+    
     setPreset(value)
     
     if (value !== "custom") {
       const newRange = calculateDateRange(value)
       setDateRange(newRange)
       applyFilter(value, newRange)
+    } else {
+      // Auto-open calendar when selecting "Custom Range"
+      setTimeout(() => setIsCalendarOpen(true), 100)
     }
   }
 
@@ -139,30 +162,73 @@ export function DateFilter() {
     }
   }
 
+  // Determine if mobile view
+  const isMobile = useMobile();
+
+
+  const dateRangeText = dateRange?.from && dateRange?.to 
+    ? `${format(dateRange.from, "dd MMM yyyy", { locale: id })} - ${format(dateRange.to, "dd MMM yyyy", { locale: id })}`
+    : ""
+
+
+
+
+
+
   return (
     <div className="flex items-center gap-2">
       {/* Preset Selector */}
       <Select value={preset} onValueChange={handlePresetChange}>
-        <SelectTrigger className="w-[160px]">
+        <SelectTrigger className="w-30 md:w-40 h-8 md:h-10 text-xs md:text-sm">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="bulan-ini">Bulan Ini</SelectItem>
-          <SelectItem value="kemarin">Kemarin</SelectItem>
-          <SelectItem value="bulan-lalu">Bulan Lalu</SelectItem>
-          <SelectItem value="tahun-ini">Tahun Ini</SelectItem>
-          <SelectItem value="tahun-lalu">Tahun Lalu</SelectItem>
-          <SelectItem value="12-bulan-terakhir">12 Bulan Terakhir</SelectItem>
-          <SelectItem value="custom">Custom Range</SelectItem>
+          
+          <SelectGroup>
+            {isMobile && dateRangeText && (
+              <>
+                <SelectLabel className="text-xs text-muted-foreground font-normal px-2 py-1.5 mb-1">
+                  {dateRangeText}
+                </SelectLabel>
+                <div className="border-b border-gray-200 mx-2 mb-2" />
+              </>
+            )}
+            <SelectItem value="bulan-ini">Bulan Ini</SelectItem>
+            <SelectItem value="kemarin">Kemarin</SelectItem>
+            <SelectItem value="bulan-lalu">Bulan Lalu</SelectItem>
+            <SelectItem value="tahun-ini">Tahun Ini</SelectItem>
+            <SelectItem value="tahun-lalu">Tahun Lalu</SelectItem>
+            <SelectItem value="12-bulan-terakhir">12 Bulan Terakhir</SelectItem>
+            <SelectItem 
+              value="custom"
+              onPointerDown={(e) => {
+                // If already on custom, manually open calendar
+                if (preset === "custom") {
+                  e.preventDefault()
+                  setIsCalendarOpen(true)
+                }
+              }}
+            >
+              Custom Range
+            </SelectItem>
+            
+          </SelectGroup>
         </SelectContent>
       </Select>
 
-      {/* Custom Date Range Picker (only show when custom is selected) */}
-      {preset === "custom" && (
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button variant="outline" size="sm" className="min-w-[240px] justify-start text-left">
-              <Calendar className="mr-2 h-4 w-4" />
+
+    
+      {/* Custom Date Range Picker - Desktop Only */}
+      {preset === "custom" && !isMobile && (
+      <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
+        <PopoverTrigger asChild>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className={isMobile ? "flex-1 min-w-0 justify-start text-left" : "min-w-[240px] justify-start text-left"}
+          >
+            <Calendar className="mr-2 h-4 w-4 flex-shrink-0" />
+            <span className="truncate">
               {dateRange?.from ? (
                 dateRange.to ? (
                   <>
@@ -173,29 +239,71 @@ export function DateFilter() {
                   format(dateRange.from, "dd MMM yyyy", { locale: id })
                 )
               ) : (
-                <span>Pilih tanggal</span>
+                "Pilih tanggal"
               )}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="end">
-            <CalendarComponent
-              mode="range"
-              selected={dateRange}
-              onSelect={handleCustomDateChange}
-              numberOfMonths={2}
-              initialFocus
-            />
-          </PopoverContent>
-        </Popover>
+            </span>
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent 
+          className={isMobile ? "w-[calc(100vw-2rem)]" : "w-auto"} 
+          align={isMobile ? "center" : "end"}
+          side={isMobile ? "bottom" : "bottom"}
+          sideOffset={5}
+        >
+          <CalendarComponent
+            mode="range"
+            selected={dateRange}
+            onSelect={handleCustomDateChange}
+            numberOfMonths={2}
+          />
+        </PopoverContent>
+      </Popover>
+    )}
+
+    {/* Custom Date Range Picker - Mobile Only (Modal style) */}
+      {preset === "custom" && isMobile && (
+        <Dialog open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
+          <DialogContent className="max-w-[70vw] sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Pilih Rentang Tanggal</DialogTitle>
+            </DialogHeader>
+            <div className="flex justify-center py-4">
+              <CalendarComponent
+                mode="range"
+                selected={dateRange}
+                onSelect={setDateRange}
+                numberOfMonths={1}
+              />
+            </div>
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button variant="outline">Batal</Button>
+              </DialogClose>
+              <Button 
+                onClick={() => {
+                  if (dateRange?.from && dateRange?.to) {
+                    setPreset("custom")
+                    applyFilter("custom", dateRange)
+                    setIsCalendarOpen(false)
+                  }
+                }}
+                disabled={!dateRange?.from || !dateRange?.to}
+              >
+                Pilih
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       )}
 
-      {/* Display current date range */}
-      {preset !== "custom" && dateRange?.from && dateRange?.to && (
+      
+       {/* Display current date range (desktop only) */}
+      {!isMobile && preset !== "custom" && dateRangeText && (
         <div className="text-sm text-muted-foreground">
-          {format(dateRange.from, "dd MMM yyyy", { locale: id })} -{" "}
-          {format(dateRange.to, "dd MMM yyyy", { locale: id })}
+          {dateRangeText}
         </div>
       )}
+
     </div>
   )
 }

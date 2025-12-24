@@ -48,9 +48,9 @@ export function RevenueReceipts({ data }: RevenueReceiptsProps) {
             </Table>
           </div>
         ) : (
-          <div className="flex items-center justify-center h-full">
-            <p className="text-sm text-muted-foreground">Tidak ada data</p>
-          </div>
+            <div className="flex items-center justify-center w-full h-full min-h-[180px] md:min-h-[220px] bg-muted/20 rounded-md">
+              <p className="text-sm text-muted-foreground">Tidak ada data</p>
+            </div>
         )}
       </CardContent>
     </Card>

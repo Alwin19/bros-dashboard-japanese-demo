@@ -28,14 +28,14 @@ const sidebarItems = [
 export function DashboardSidebar() {
   return (
     <Sidebar variant="sidebar">
-      <SidebarHeader className="border-b h-20">
+      <SidebarHeader className="h-20">
         <div className="flex items-center space-x-2 px-2 h-full">
           <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
             <span className="text-primary-foreground font-bold text-sm">BR</span>
           </div>
           <div>
-            <h1 className="text-lg font-semibold">BROS</h1>
-            <p className="text-xs">Dashboard Rumah Sakit</p>
+            <h1 className="text-xs font-semibold">BROS</h1>
+            <p className="text-md font-semibold">Dashboard Eksekutif</p>
           </div>
         </div>
       </SidebarHeader>
