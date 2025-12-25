@@ -5,10 +5,11 @@ import { defineConfig } from "prisma/config";
 
 export default defineConfig({
   schema: "prisma/schema.prisma",
-  migrations: {
-    path: "prisma/migrations",
-  },
   datasource: {
-    url: process.env["DATABASE_URL"],
+      // Port 5432 (Direct) for migrations and db push
+      url: process.env.DIRECT_URL,
+    },
+  migrations: {
+      seed: 'npx tsx prisma/seed.ts',
   },
 });

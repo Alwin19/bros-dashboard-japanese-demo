@@ -1,4 +1,7 @@
 import { prisma } from "../lib/prisma";
+import "dotenv/config"
+
+
 
 async function main() {
   // Create User 1 (CEO)
