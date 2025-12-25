@@ -28,6 +28,8 @@ export async function login(prevState: any, formData: FormData) {
     await createSession(user.id)
 
   } catch (error) {
+    // Log the actual error to see what's happening
+    console.error("Login error:", error)
     return { error: "Something went wrong. Please try again." }
   }
 
