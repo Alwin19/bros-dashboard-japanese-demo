@@ -21,8 +21,8 @@ export function RevenueReceipts({ data }: RevenueReceiptsProps) {
       </CardHeader>
       <CardContent className="flex-1 flex flex-col items-center overflow-hidden">
         {receipts.length > 0 ? (
-          <div className="overflow-auto max-h-[280px] sm:max-h-[300px] text-xs sm:text-sm">
-            <Table className="w-full w-[250px]">
+          <div className="w-full max-w-[360px] overflow-auto max-h-[280px] sm:max-h-[300px] text-xs sm:text-sm">
+            <Table className="w-full">
               <TableHeader>
                 <TableRow className="bg-primary hover:bg-primary">
                   <TableHead className="text-primary-foreground font-semibold text-sm sm:text-base lg:text-[11px]">
