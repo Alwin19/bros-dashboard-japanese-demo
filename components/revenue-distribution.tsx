@@ -82,7 +82,7 @@ export function RevenueDistribution({ data }: RevenueDistributionProps) {
             </PieChart>
           </ChartContainer>
         ) : (
-              <div className="w-full h-[180px] md:h-[220px] flex items-center justify-center bg-muted/20 rounded-md">
+              <div className="flex items-center justify-center w-full h-[200px] bg-muted/20 rounded-md">
                 <p className="text-sm text-muted-foreground">Tidak ada data</p>
               </div>
         )}

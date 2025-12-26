@@ -19,10 +19,10 @@ export function RevenueReceipts({ data }: RevenueReceiptsProps) {
       <CardHeader>
         <CardTitle className="text-base sm:text-lg font-semibold">Penerimaan JKN</CardTitle>
       </CardHeader>
-      <CardContent className="flex-1 overflow-hidden">
+      <CardContent className="flex-1 flex flex-col items-center overflow-hidden">
         {receipts.length > 0 ? (
           <div className="overflow-auto max-h-[280px] sm:max-h-[300px] text-xs sm:text-sm">
-            <Table className="w-full min-w-[150px]">
+            <Table className="w-full w-[250px]">
               <TableHeader>
                 <TableRow className="bg-primary hover:bg-primary">
                   <TableHead className="text-primary-foreground font-semibold text-sm sm:text-base lg:text-[11px]">
@@ -48,7 +48,7 @@ export function RevenueReceipts({ data }: RevenueReceiptsProps) {
             </Table>
           </div>
         ) : (
-            <div className="flex items-center justify-center w-full h-full min-h-[180px] md:min-h-[220px] bg-muted/20 rounded-md">
+            <div className="flex items-center justify-center w-full h-[200px] bg-muted/20 rounded-md">
               <p className="text-sm text-muted-foreground">Tidak ada data</p>
             </div>
         )}

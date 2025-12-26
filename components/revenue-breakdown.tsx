@@ -55,20 +55,20 @@ export function RevenueBreakdown({ data }: RevenueBreakdownProps) {
       <CardHeader className="pb-3">
         <CardTitle className="text-base md:text-lg font-semibold">Breakdown Pendapatan JKN</CardTitle>
       </CardHeader>
-      <CardContent className="p-4 md:p-6">
+      <CardContent className="h-full pb-0">
         <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
 
           {/* Tertinggi Chart */}
-          <div className="flex-1 min-w-0 flex flex-col min-h-[240px]">
+          <div className="flex-1 min-w-0 flex flex-col justify-between">
             <h4 className="text-xs md:text-sm font-medium mb-3 md:mb-4 text-muted-foreground">
               Pendapatan JKN Tertinggi
             </h4>
             {tertinggiData.length > 0 ? (
-              <ChartContainer config={chartConfig} className="flex-1 w-full max-w-[400px] justify-self-center">
+              <ChartContainer config={chartConfig} className="w-full h-[280px]">
                 <BarChart
                   data={tertinggiData} 
                   layout="vertical" 
-                  margin={{ top: 0, right: 10, left: -15, bottom: -15 }}
+                  margin={{ top: 0, right: 10, left: -10, bottom: 0}}
                 >
                   <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} />
                   <XAxis 
@@ -96,23 +96,23 @@ export function RevenueBreakdown({ data }: RevenueBreakdownProps) {
                 </BarChart>
               </ChartContainer>
             ) : (
-              <div className="flex-1 flex items-center justify-center w-full h-full bg-muted/20 rounded-md">
+              <div className="flex items-center justify-center w-full h-[200px] bg-muted/20 rounded-md">
                 <p className="text-sm text-muted-foreground">Tidak ada data</p>
               </div>
             )}
           </div>
 
           {/* Terendah Chart */}
-          <div className="flex-1 min-w-0 flex flex-col min-h-[240px]">
+          <div className="flex-1 min-w-0 flex flex-col justify-between">
             <h4 className="text-xs md:text-sm font-medium mb-3 md:mb-4 text-muted-foreground">
               Pendapatan JKN Terendah
             </h4>
             {terendahData.length > 0 ? (
-              <ChartContainer config={chartConfig} className="flex-1 w-full max-w-[400px] justify-self-center">
+              <ChartContainer config={chartConfig} className="w-full h-[280px]">
                 <BarChart 
                   data={terendahData} 
                   layout="vertical" 
-                  margin={{ top: 0, right: 10, left: -15, bottom: -15 }}
+                  margin={{ top: 0, right: 10, left: -10, bottom: 0}}
                 >
                   <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} />
                   <XAxis 
@@ -140,18 +140,18 @@ export function RevenueBreakdown({ data }: RevenueBreakdownProps) {
                 </BarChart>
               </ChartContainer>
             ) : (
-            <div className="flex-1 flex items-center justify-center w-full h-full bg-muted/20 rounded-md">
+            <div className="flex items-center justify-center w-full h-[200px] bg-muted/20 rounded-md">
                 <p className="text-sm text-muted-foreground">Tidak ada data</p>
               </div>
             )}
           </div>
 
           {/* Trend Chart */}
-          <div className="flex-1 min-w-0 lg:flex-[2] flex flex-col min-h-[240px]">
-            <div className="flex items- justify-between mb-3 md:mb-4">
+          <div className="flex-1 min-w-0 lg:flex-[2] flex flex-col">
+            <div className="flex justify-between mb-3 md:mb-4">
               <h4 className="text-xs md:text-sm font-medium text-muted-foreground">Trend</h4>
               <Select defaultValue="semua-unit">
-                <SelectTrigger className="w-28 md:w-32 h-8 md:h-10 text-xs md:text-sm">
+                <SelectTrigger className="w-28 md:w-32 text-xs md:text-sm">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -161,10 +161,10 @@ export function RevenueBreakdown({ data }: RevenueBreakdownProps) {
               </Select>
             </div>
             {trendData.length > 0 ? (
-              <ChartContainer config={chartConfig} className="flex-1 w-full max-w-[400px] justify-self-center">
+              <ChartContainer config={chartConfig} className="w-full h-[280px]">
                 <AreaChart 
                   data={trendData}
-                  margin={{ top: 10, right: 10, left: -10, bottom: 0 }}
+                  margin={{ top: 0, right: 10, left: -10, bottom: 0}}
                 >
                   <defs>
                     <linearGradient id="gradientRevenue" x1="0" y1="0" x2="0" y2="1">
@@ -204,7 +204,7 @@ export function RevenueBreakdown({ data }: RevenueBreakdownProps) {
                 </AreaChart>
               </ChartContainer>
             ) : (
-              <div className="flex-1 flex items-center justify-center w-full h-full bg-muted/20 rounded-md">
+              <div className="flex items-center justify-center w-full h-[200px] bg-muted/20 rounded-md">
                 <p className="text-sm text-muted-foreground">Tidak ada data</p>
               </div>
             )}

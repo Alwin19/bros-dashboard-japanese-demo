@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useRouter, useSearchParams, usePathname } from "next/navigation"
 import { Calendar } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
@@ -41,6 +41,7 @@ type DatePreset =
 export function DateFilter() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const pathname = usePathname() 
   
   const today = new Date()
   
@@ -150,7 +151,7 @@ export function DateFilter() {
     params.set("startDate", format(range.from, "yyyy-MM-dd"))
     params.set("endDate", format(range.to, "yyyy-MM-dd"))
     
-    router.push(`/?${params.toString()}`)
+    router.push(`${pathname}?${params.toString()}`)
   }
 
   // Handle custom date range selection
