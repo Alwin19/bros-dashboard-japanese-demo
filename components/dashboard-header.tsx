@@ -11,22 +11,19 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu" // Adjust import path if needed
+} from "@/components/ui/dropdown-menu" 
 import {
   Avatar,
   AvatarFallback,
-  AvatarImage,
 } from "@/components/ui/avatar"
 import { logout } from "@/app/actions/auth"
 
-
+// 1. Update User type to match what getCurrentUser() returns
 type User = {
-  id: string
-  name: string | null
-  email: string
+  id: number | string
+  name: string // This maps to 'username' from session
   role: string
 }
-
 
 type DashboardHeaderProps = {
   user: User
@@ -34,24 +31,18 @@ type DashboardHeaderProps = {
 
 export function DashboardHeader({ user }: DashboardHeaderProps) {
 
-  const getUserInitials = (name: string | null, email: string) => {
-    if (name) {
-      return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
-    }
-    return email.slice(0, 2).toUpperCase()
+  // 2. Simplify initials since we just have a username
+  const getUserInitials = (name: string) => {
+    return name ? name.substring(0, 2).toUpperCase() : "U"
   }
 
   const handleLogout = async () => {
     try {
       await logout()
-      // Redirect is handled by the logout Server Action
     } catch (error) {
       console.error('Logout failed:', error)
-      // Optionally show error toast/message to user
     }
   }
-
-
 
   return (
     <header className="bg-background border-b border-border px-3 md:px-6 py-3 md:py-4 sticky top-0 z-10">
@@ -95,16 +86,17 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  {/* <AvatarImage src={user.avatar} alt={user.name} /> */}
                   <AvatarFallback className="rounded-lg">
-                    {getUserInitials(user.name, user.email)}
+                    {getUserInitials(user.name)}
                   </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">
-                    {user.name || user.email.split('@')[0]}
-                    </span>
-                  <span className="truncate text-xs">{user.email}</span>
+                    {user.name}
+                  </span>
+                  <span className="text-xs text-muted-foreground capitalize">
+                    {user.role}
+                  </span>
                 </div>
               </div>
             </DropdownMenuLabel>
