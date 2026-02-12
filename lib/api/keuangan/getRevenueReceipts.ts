@@ -1,6 +1,6 @@
 import { unstable_cache } from "next/cache";
-import { cleanRevenueReceipts } from "./dataCleaner";
-import { fetchWithAuth } from "@/app/lib/api";
+import { cleanRevenueReceipts } from "../transformers";
+import { fetchWithAuth, isRedirectError } from "@/app/lib/api";
 
 export const getRevenueReceipts = async (
   hospitalId: string,
@@ -21,6 +21,9 @@ export const getRevenueReceipts = async (
       return cleanRevenueReceipts(data.data || []);
       
     } catch (error) {
+      if (isRedirectError(error)) {
+              throw error;
+            } 
       console.error("Revenue receipts error:", error);
       return [];
     }

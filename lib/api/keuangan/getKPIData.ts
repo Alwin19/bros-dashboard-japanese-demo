@@ -1,11 +1,12 @@
-import { cleanKPIData } from "./dataCleaner";
-import { fetchWithAuth } from "@/app/lib/api";
+import { cleanKPIData } from "../transformers";
+import { fetchWithAuth, isRedirectError } from "@/app/lib/api";
 
 // Fetch KPI Data with 24h cache
 export const getKPIData = async (
   hospitalId: string,
   startDate: string,
-  endDate: string
+  endDate: string,
+  preset?: string
 ) => {
 
     try {
@@ -29,9 +30,13 @@ export const getKPIData = async (
         penerimaan: penerimaan.data || {},
       };
 
-      return cleanKPIData(rawData);
+      return cleanKPIData(rawData, startDate, endDate, preset);
       
     } catch (error) {
+      if (isRedirectError(error)) {
+              throw error;
+            }
+            
       console.error("KPI data error:", error);
       return [];
     }

@@ -13,7 +13,7 @@ interface KPICardsProps {
   data?: KPICardData[]
 }
 
-export function KPICards({ data }: KPICardsProps) {
+export function FinancialKPICards({ data }: KPICardsProps) {
   const kpiData = data || []
 
   return (

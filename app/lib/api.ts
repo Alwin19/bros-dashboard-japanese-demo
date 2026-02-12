@@ -32,3 +32,10 @@ export async function fetchWithAuth(endpoint: string, options: RequestInit = {})
 
   return response.json()
 }
+
+
+// to catch redirect errors from Next.js
+export function isRedirectError(error: any) {
+  return error?.digest?.startsWith('NEXT_REDIRECT') || 
+         (typeof error === 'object' && error?.message === 'NEXT_REDIRECT');
+}

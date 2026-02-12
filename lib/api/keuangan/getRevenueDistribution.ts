@@ -1,6 +1,6 @@
 import { unstable_cache } from "next/cache";
-import { cleanRevenueDistribution } from "./dataCleaner";
-import { fetchWithAuth } from "@/app/lib/api";
+import { cleanRevenueDistribution } from "../transformers";
+import { fetchWithAuth, isRedirectError } from "@/app/lib/api";
 
 export const getRevenueDistribution = async (
   hospitalId: string,
@@ -20,6 +20,9 @@ export const getRevenueDistribution = async (
       return cleanRevenueDistribution(data.data || []);
       
     } catch (error) {
+      if (isRedirectError(error)) {
+              throw error;
+            }
       console.error("Revenue distribution error:", error);
       return { distribution: [], chartConfig: {} };
     }

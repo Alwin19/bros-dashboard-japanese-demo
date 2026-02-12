@@ -1,10 +1,12 @@
-import { KPICards } from "@/components/kpi-cards"
-import { RevenueBreakdown } from "@/components/revenue-breakdown"
-import { RevenueDistribution } from "@/components/revenue-distribution"
-import { DifferenceBreakdown } from "@/components/difference-breakdown"
-import { RevenueReceipts } from "@/components/revenue-receipts"
+import { FinancialKPICards } from "@/components/keuangan/financial-kpi-cards"
+import { RevenueBreakdown } from "@/components/keuangan/revenue-breakdown"
+import { RevenueDistribution } from "@/components/keuangan/revenue-distribution"
+import { DifferenceBreakdown } from "@/components/keuangan/difference-breakdown"
+import { RevenueReceipts } from "@/components/keuangan/revenue-receipts"
 import { getDashboardData } from "@/lib/api/dataFetcher"
 import { redirect } from "next/navigation"
+import { format } from "date-fns"
+import { id } from "date-fns/locale"
 
 
 interface PageProps {
@@ -39,11 +41,17 @@ export default async function DashboardPage({ searchParams }: PageProps) {
   //   params.endDate || format(today, "yyyy-MM-dd")
   // const hospitalId = params.hospitalId || "1"
 
-  const data = await getDashboardData(hospitalId, startDate, endDate)
+  const data = await getDashboardData(hospitalId, startDate, endDate, params.preset)
+  const formattedStartDate = format(new Date(startDate), "dd MMM yyyy", { locale: id })
+  const formattedEndDate = format(new Date(endDate), "dd MMM yyyy", { locale: id })
 
   return (
     <>
-      <KPICards data={data.kpi} />
+      <h2 className="text-sm text-muted-foreground">
+          Berdasarkan periode: {formattedStartDate} - {formattedEndDate}
+      </h2>
+
+      <FinancialKPICards data={data.kpi} />
 
       <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
         <div className="xl:col-span-3">

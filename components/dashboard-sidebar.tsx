@@ -1,5 +1,7 @@
 "use client"
 
+import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { DollarSign, Users } from "lucide-react"
 import {
   Sidebar,
@@ -15,17 +17,20 @@ import {
 const sidebarItems = [
   {
     title: "Keuangan",
+    url: "/dashboard/keuangan",
     icon: DollarSign,
-    active: true,
   },
   {
-    title: "Operational",
+    title: "Operasional", // Fixed spelling to match folder name if intended
+    url: "/dashboard/operasional",
     icon: Users,
-    active: false,
   },
 ]
 
 export function DashboardSidebar() {
+  // 2. Get current path to determine active state
+  const pathname = usePathname()
+
   return (
     <Sidebar variant="sidebar">
       <SidebarHeader className="h-20">
@@ -43,14 +48,22 @@ export function DashboardSidebar() {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {sidebarItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton isActive={item.active}>
-                    <item.icon />
-                    <span>{item.title}</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {sidebarItems.map((item) => {
+                // 3. Check if current path matches item url
+                const isActive = pathname.startsWith(item.url)
+                
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    {/* 4. Use asChild + Link for navigation */}
+                    <SidebarMenuButton isActive={isActive} asChild>
+                      <Link href={item.url}>
+                        <item.icon />
+                        <span>{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                )
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

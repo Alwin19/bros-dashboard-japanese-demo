@@ -3,6 +3,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { LabelList, PieChart, Pie } from "recharts"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { ListFilter } from "lucide-react"
+import { useSidebar } from "@/components/ui/sidebar"
+import { cn } from "@/lib/utils"
+
 import {
   ChartContainer,
   ChartTooltip,
@@ -27,6 +31,8 @@ interface RevenueDistributionProps {
 }
 
 export function RevenueDistribution({ data }: RevenueDistributionProps) {
+  const { state } = useSidebar()
+  const isSidebarOpen = state === "expanded"
   const pieData = data?.distribution || []
   const chartConfig = data?.chartConfig || {}
 
@@ -35,8 +41,14 @@ export function RevenueDistribution({ data }: RevenueDistributionProps) {
       <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
         <CardTitle className="text-base sm:text-lg font-semibold">Distribusi Pendapatan JKN</CardTitle>
         <Select defaultValue="semua-unit">
-          <SelectTrigger className="w-full sm:w-32 text-xs sm:text-sm">
-            <SelectValue />
+          <SelectTrigger className={cn(
+            "w-24 md:w-28 text-xs",
+            isSidebarOpen && "xl:w-10 xl:p-0 xl:justify-center [&>svg:last-child]:xl:hidden"
+          )}>
+             <span className={cn("truncate", isSidebarOpen && "xl:hidden")}>
+              <SelectValue />
+             </span>
+             <ListFilter className={cn("hidden h-4 w-4", isSidebarOpen && "xl:block")} />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="semua-unit">Semua Unit</SelectItem>

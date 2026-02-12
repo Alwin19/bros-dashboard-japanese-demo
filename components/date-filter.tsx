@@ -179,7 +179,7 @@ export function DateFilter() {
   return (
     <div className="flex items-center gap-2">
       {/* Preset Selector */}
-      <Select value={preset} onValueChange={handlePresetChange}>
+      <Select value={preset} defaultValue="custom" onValueChange={handlePresetChange}>
         <SelectTrigger className="w-30 md:w-40 h-8 md:h-10 text-xs md:text-sm">
           <SelectValue />
         </SelectTrigger>

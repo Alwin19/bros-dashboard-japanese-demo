@@ -1,6 +1,5 @@
-import { cleanDifferenceData } from "./dataCleaner";
-import { fetchWithAuth } from "@/app/lib/api";
-
+import { cleanDifferenceData } from "../transformers";
+import { fetchWithAuth, isRedirectError } from "@/app/lib/api";
 
 export const getDifferenceData = async (
   hospitalId: string,
@@ -37,6 +36,10 @@ export const getDifferenceData = async (
       return cleanDifferenceData(rawData);
       
     } catch (error) {
+      if (isRedirectError(error)) {
+        throw error;
+      }
+
       console.error("Difference data error:", error);
       return { tertinggi: [], terendah: [], trend: [] };
     }

@@ -1,18 +1,19 @@
-import { getKPIData } from "./getKPIData";
-import { getRevenueData } from "./getRevenueData";
-import { getRevenueDistribution } from "./getRevenueDistribution";
-import { getDifferenceData } from "./getDifferenceData";
-import { getRevenueReceipts } from "./getRevenueReceipts";
+import { getKPIData } from "./keuangan/getKPIData";
+import { getRevenueData } from "./keuangan/getRevenueData";
+import { getRevenueDistribution } from "./keuangan/getRevenueDistribution";
+import { getDifferenceData } from "./keuangan/getDifferenceData";
+import { getRevenueReceipts } from "./keuangan/getRevenueReceipts";
 
 export async function getDashboardData(
   hospitalId: string,
   startDate: string,
-  endDate: string
+  endDate: string,
+  preset?: string
 ) {
   try {
     // Fetch all data in parallel
     const [kpi, revenueBreakdown, revenueDistribution, differenceBreakdown, receipts] = await Promise.all([
-      getKPIData(hospitalId, startDate, endDate),
+      getKPIData(hospitalId, startDate, endDate, preset),
       getRevenueData(hospitalId, startDate, endDate),
       getRevenueDistribution(hospitalId, startDate, endDate),
       getDifferenceData(hospitalId, startDate, endDate),

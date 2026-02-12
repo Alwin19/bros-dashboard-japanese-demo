@@ -1,5 +1,5 @@
-import { cleanRevenueData } from "./dataCleaner";
-import { fetchWithAuth } from "@/app/lib/api";
+import { cleanRevenueData } from "../transformers";
+import { fetchWithAuth, isRedirectError } from "@/app/lib/api";
 
 export const getRevenueData = async (
   hospitalId: string,
@@ -33,6 +33,9 @@ export const getRevenueData = async (
       return cleanRevenueData(rawData);
       
     } catch (error) {
+      if (isRedirectError(error)) {
+              throw error;
+            }
       console.error("Revenue data error:", error);
       return { tertinggi: [], terendah: [], trend: [] };
     }

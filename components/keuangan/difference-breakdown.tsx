@@ -1,7 +1,7 @@
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, AreaChart, Area} from "recharts"
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ReferenceLine, Cell, LineChart, Line } from "recharts"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 
@@ -13,7 +13,7 @@ interface ChartDataItem {
   formattedValue: string
 }
 
-interface RevenueBreakdownProps {
+interface DifferenceBreakdownProps {
   data?: {
     tertinggi?: ChartDataItem[]
     terendah?: ChartDataItem[]
@@ -22,29 +22,32 @@ interface RevenueBreakdownProps {
 }
 
 const chartConfig = {
-  pendapatan: {
-    label: "Pendapatan",
-    color: "var(--chart-1)",
+  selisih: {
+    label: "Selisih",
+    color: "var(--chart-2)",
   },
   value: {
-    label: "Pendapatan",
-    color: "var(--chart-1)",
+    label: "Selisih",
+    color: "var(--chart-2)",
   },
 }
 
-// Fallback formatter (always available in client)
+// Formatter that handles negative values
 const toIDRScale = (value: number) => {
-  if (value >= 1000000000) {
-    return `${(value / 1000000000).toFixed(1)} M`; // Miliar
-  } else if (value >= 1000000) {
-    return `${(value / 1000000).toFixed(1)} Jt`; // Juta
-  } else if (value >= 1000) {
-    return `${(value / 1000).toFixed(0)} Rb`; // Ribu
+  const absValue = Math.abs(value);
+  const sign = value < 0 ? '-' : '';
+  
+  if (absValue >= 1000000000) {
+    return `${sign}${(absValue / 1000000000).toFixed(1)} M`;
+  } else if (absValue >= 1000000) {
+    return `${sign}${(absValue / 1000000).toFixed(1)} Jt`;
+  } else if (absValue >= 1000) {
+    return `${sign}${(absValue / 1000).toFixed(0)} Rb`;
   }
   return value.toString();
 };
 
-export function RevenueBreakdown({ data }: RevenueBreakdownProps) {
+export function DifferenceBreakdown({ data }: DifferenceBreakdownProps) {
   
   const tertinggiData = data?.tertinggi || []
   const terendahData = data?.terendah || []
@@ -53,15 +56,15 @@ export function RevenueBreakdown({ data }: RevenueBreakdownProps) {
   return (
     <Card className="h-full">
       <CardHeader className="pb-3">
-        <CardTitle className="text-base md:text-lg font-semibold">Breakdown Pendapatan JKN</CardTitle>
+        <CardTitle className="text-base md:text-lg font-semibold">Breakdown Selisih JKN</CardTitle>
       </CardHeader>
-      <CardContent className="h-full pb-0">
+      <CardContent className="p-4 md:p-6">
         <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
 
           {/* Tertinggi Chart */}
           <div className="flex-1 min-w-0 flex flex-col justify-between">
             <h4 className="text-xs md:text-sm font-medium mb-3 md:mb-4 text-muted-foreground">
-              Pendapatan JKN Tertinggi
+              Selisih JKN Tertinggi
             </h4>
             {tertinggiData.length > 0 ? (
               <ChartContainer config={chartConfig} className="w-full h-[280px]">
@@ -72,7 +75,7 @@ export function RevenueBreakdown({ data }: RevenueBreakdownProps) {
                 >
                   <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} />
                   <XAxis 
-                    type="number" 
+                    type="number"
                     tickFormatter={toIDRScale}
                     tick={{ fontSize: 10 }}
                   />
@@ -82,17 +85,20 @@ export function RevenueBreakdown({ data }: RevenueBreakdownProps) {
                     width={100}
                     tick={{ fontSize: 11 }}
                   />
+                  <ReferenceLine x={0} stroke="hsl(var(--border))" strokeWidth={1} />
                   <ChartTooltip 
                     content={<ChartTooltipContent 
                       formatter={(value, name, props) => props.payload.formattedValue}
                     />} 
                   />
-                  <Bar 
-                    dataKey="value" 
-                    fill="var(--color-pendapatan)" 
-                    radius={[0, 4, 4, 0]} 
-                    barSize={25}
-                  />
+                  <Bar dataKey="value" radius={[0, 4, 4, 0]} barSize={25}>
+                    {tertinggiData.map((item) => (
+                      <Cell
+                        key={item.category}
+                        fill={item.value >= 0 ? "var(--chart-2)" : "var(--chart-2)"}
+                      />
+                    ))}
+                  </Bar>
                 </BarChart>
               </ChartContainer>
             ) : (
@@ -105,7 +111,7 @@ export function RevenueBreakdown({ data }: RevenueBreakdownProps) {
           {/* Terendah Chart */}
           <div className="flex-1 min-w-0 flex flex-col justify-between">
             <h4 className="text-xs md:text-sm font-medium mb-3 md:mb-4 text-muted-foreground">
-              Pendapatan JKN Terendah
+              Selisih JKN Terendah
             </h4>
             {terendahData.length > 0 ? (
               <ChartContainer config={chartConfig} className="w-full h-[280px]">
@@ -115,32 +121,36 @@ export function RevenueBreakdown({ data }: RevenueBreakdownProps) {
                   margin={{ top: 0, right: 10, left: -10, bottom: 0}}
                 >
                   <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} />
-                  <XAxis 
-                    type="number" 
+                  <XAxis
+                    reversed = {true}
+                    type="number"
                     tickFormatter={toIDRScale}
                     tick={{ fontSize: 10 }}
                   />
-                  <YAxis 
+                  <YAxis
                     dataKey="category" 
                     type="category" 
                     width={100}
                     tick={{ fontSize: 11 }}
                   />
+                  <ReferenceLine x={0} stroke="hsl(var(--border))" strokeWidth={1} />
                   <ChartTooltip 
                     content={<ChartTooltipContent 
                       formatter={(value, name, props) => props.payload.formattedValue}
                     />} 
                   />
-                  <Bar 
-                    dataKey="value" 
-                    fill="var(--color-pendapatan)" 
-                    radius={[0, 4, 4, 0]}
-                    barSize={25}
-                  />
+                  <Bar dataKey="value" radius={[0, 4, 4, 0]} barSize={25}>
+                    {terendahData.map((item) => (
+                      <Cell
+                        key={item.category}
+                        fill={item.value >= 0 ? "var(--chart-2)" : "var(--chart-2)"}
+                      />
+                    ))}
+                  </Bar>
                 </BarChart>
               </ChartContainer>
             ) : (
-            <div className="flex items-center justify-center w-full h-[200px] bg-muted/20 rounded-md">
+              <div className="flex items-center justify-center w-full h-[200px] bg-muted/20 rounded-md">
                 <p className="text-sm text-muted-foreground">Tidak ada data</p>
               </div>
             )}
@@ -149,9 +159,9 @@ export function RevenueBreakdown({ data }: RevenueBreakdownProps) {
           {/* Trend Chart */}
           <div className="flex-1 min-w-0 lg:flex-[2] flex flex-col">
             <div className="flex justify-between mb-3 md:mb-4">
-              <h4 className="text-xs md:text-sm font-medium text-muted-foreground">Trend</h4>
+              <h4 className="text-xs md:text-sm font-medium text-muted-foreground">Tren</h4>
               <Select defaultValue="semua-unit">
-                <SelectTrigger className="w-28 md:w-32 text-xs md:text-sm">
+                <SelectTrigger className="w-24 md:w-28 text-xs">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -161,48 +171,42 @@ export function RevenueBreakdown({ data }: RevenueBreakdownProps) {
               </Select>
             </div>
             {trendData.length > 0 ? (
-              <ChartContainer config={chartConfig} className="w-full h-[280px]">
-                <AreaChart 
-                  data={trendData}
-                  margin={{ top: 0, right: 10, left: -10, bottom: 0}}
-                >
-                  <defs>
-                    <linearGradient id="gradientRevenue" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="var(--color-value)" stopOpacity={0.3}/>
-                      <stop offset="95%" stopColor="var(--color-value)" stopOpacity={0}/>
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                  <XAxis 
-                    dataKey="date" 
-                    tick={{ fontSize: 10 }}
-                    tickMargin={5}
-                  />
-                  <YAxis 
-                    tickFormatter={toIDRScale}
-                    tick={{ fontSize: 10 }}
-                  />
-                  <ChartTooltip 
-                    content={<ChartTooltipContent 
-                      formatter={(value, name, props) => props.payload.formattedValue}
-                      labelFormatter={(label, payload) => {
-                        if (payload && payload.length > 0) {
-                          return payload[0].payload.fullDate
-                        }
-                        return label
-                      }}
-                    />} 
-                  />
-                  <Area 
-                    type="natural"
-                    dataKey="value" 
-                    stroke="var(--color-value)" 
-                    strokeWidth={2}
-                    fill="url(#gradientRevenue)"
-                    fillOpacity={1}
-                  />
-                </AreaChart>
-              </ChartContainer>
+                <ChartContainer config={chartConfig} className="w-full h-[280px]">
+                  <LineChart 
+                    data={trendData}
+                    margin={{ top: 0, right: 10, left: -10, bottom: 0}}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                    <XAxis 
+                      dataKey="date" 
+                      tick={{ fontSize: 10 }}
+                      tickMargin={5}
+                    />
+                    <YAxis
+                      reversed = {true}
+                      tickFormatter={toIDRScale}
+                      tick={{ fontSize: 10 }}
+                    />
+                    <ChartTooltip 
+                      content={<ChartTooltipContent 
+                        formatter={(value, name, props) => props.payload.formattedValue}
+                        labelFormatter={(label, payload) => {
+                          if (payload && payload.length > 0) {
+                            return payload[0].payload.fullDate
+                          }
+                          return label
+                        }}
+                      />} 
+                    />
+                    <Line 
+                      type="monotone"
+                      dataKey="value" 
+                      stroke="var(--color-value)" 
+                      strokeWidth={2}
+                      dot={false}
+                    />
+                  </LineChart>
+                </ChartContainer>
             ) : (
               <div className="flex items-center justify-center w-full h-[200px] bg-muted/20 rounded-md">
                 <p className="text-sm text-muted-foreground">Tidak ada data</p>
