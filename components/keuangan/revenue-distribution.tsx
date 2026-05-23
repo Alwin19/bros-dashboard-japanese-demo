@@ -39,7 +39,7 @@ export function RevenueDistribution({ data }: RevenueDistributionProps) {
   return (
     <Card className="h-full flex flex-col">
       <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
-        <CardTitle className="text-base sm:text-lg font-semibold">Distribusi Pendapatan JKN</CardTitle>
+        <CardTitle className="text-base sm:text-lg font-semibold">健保収益分布</CardTitle>
         <Select defaultValue="semua-unit">
           <SelectTrigger className={cn(
             "w-24 md:w-28 text-xs",
@@ -51,8 +51,12 @@ export function RevenueDistribution({ data }: RevenueDistributionProps) {
              <ListFilter className={cn("hidden h-4 w-4", isSidebarOpen && "xl:block")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="semua-unit">Semua Unit</SelectItem>
-            <SelectItem value="rawat-inap">Rawat Inap</SelectItem>
+            <SelectItem value="semua-unit">全診療科</SelectItem>
+            <SelectItem value="naika">内科</SelectItem>
+            <SelectItem value="geka">外科</SelectItem>
+            <SelectItem value="seikei">整形外科</SelectItem>
+            <SelectItem value="junkan">循環器内科</SelectItem>
+            <SelectItem value="sanka">産婦人科</SelectItem>
           </SelectContent>
         </Select>
       </CardHeader>
@@ -95,7 +99,7 @@ export function RevenueDistribution({ data }: RevenueDistributionProps) {
           </ChartContainer>
         ) : (
               <div className="flex items-center justify-center w-full h-[200px] bg-muted/20 rounded-md">
-                <p className="text-sm text-muted-foreground">Tidak ada data</p>
+                <p className="text-sm text-muted-foreground">データなし</p>
               </div>
         )}
       </CardContent>

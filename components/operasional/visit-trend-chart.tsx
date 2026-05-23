@@ -1,7 +1,7 @@
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend } from "recharts"
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from "@/components/ui/chart"
 
@@ -15,11 +15,11 @@ interface VisitTrendChartProps {
 
 const chartConfig = {
     rawatJalan: {
-      label: "Rawat Jalan",
+      label: "外来",
       color: "var(--chart-1)",
     },
     rawatInap: {
-      label: "Rawat Inap",
+      label: "入院",
       color: "var(--chart-2)",
     },
 }
@@ -28,13 +28,18 @@ export function VisitTrendChart({ data }: VisitTrendChartProps) {
   return (
     <Card className="h-full">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-base font-medium">Tren Kunjungan Rawat Jalan & Inap (7 Hari Terakhir)</CardTitle>
+        <CardTitle className="text-base font-medium">外来・入院患者数推移（過去7日間）</CardTitle>
         <Select defaultValue="semua-unit">
             <SelectTrigger className="w-[110px] h-8 text-xs">
                 <SelectValue />
             </SelectTrigger>
             <SelectContent>
-                 <SelectItem value="semua-unit">Semua Unit</SelectItem>
+                <SelectItem value="semua-unit">全診療科</SelectItem>
+                <SelectItem value="naika">内科</SelectItem>
+                <SelectItem value="geka">外科</SelectItem>
+                <SelectItem value="seikei">整形外科</SelectItem>
+                <SelectItem value="junkan">循環器内科</SelectItem>
+                <SelectItem value="sanka">産婦人科</SelectItem>
             </SelectContent>
         </Select>
       </CardHeader>
@@ -42,29 +47,29 @@ export function VisitTrendChart({ data }: VisitTrendChartProps) {
         <ChartContainer config={chartConfig} className="w-full h-[300px]">
           <BarChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }} barGap={5}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} />
-            <XAxis 
-                dataKey="day" 
-                axisLine={false} 
-                tickLine={false} 
+            <XAxis
+                dataKey="day"
+                axisLine={false}
+                tickLine={false}
                 tick={{ fontSize: 12, fill: "#666" }}
                 dy={10}
             />
-            <YAxis 
-                axisLine={false} 
-                tickLine={false} 
+            <YAxis
+                axisLine={false}
+                tickLine={false}
                 tick={{ fontSize: 12, fill: "#666" }}
             />
             <ChartTooltip content={<ChartTooltipContent />} />
              <ChartLegend content={<ChartLegendContent />} />
-            <Bar 
-                dataKey="rawatJalan" 
-                fill="var(--chart-1)" 
+            <Bar
+                dataKey="rawatJalan"
+                fill="var(--chart-1)"
                 radius={[4, 4, 0, 0]}
                 barSize={20}
             />
-            <Bar 
-                dataKey="rawatInap" 
-                fill="var(--chart-2)" 
+            <Bar
+                dataKey="rawatInap"
+                fill="var(--chart-2)"
                 radius={[4, 4, 0, 0]}
                 barSize={20}
             />

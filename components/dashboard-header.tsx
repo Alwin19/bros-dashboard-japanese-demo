@@ -53,20 +53,20 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
         <div className="flex items-center gap-2 flex-1">
           <div className="flex items-center gap-1.5 md:gap-2">
             <div className="flex flex-col">
-              <label className="text-[10px] md:text-xs text-muted-foreground mb-0.5 md:mb-1">Rumah Sakit</label>
+              <label className="text-[10px] md:text-xs text-muted-foreground mb-0.5 md:mb-1">病院</label>
               <Select defaultValue="rs-utama">
                 <SelectTrigger className="w-30 md:w-40 h-8 md:h-10 text-xs md:text-sm">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="rs-utama">RS Utama</SelectItem>
-                  <SelectItem value="rs-cabang">RSIA</SelectItem>
+                  <SelectItem value="rs-utama">東京中央病院</SelectItem>
+                  <SelectItem value="rs-cabang">東京第二病院</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="flex flex-col">
-              <label className="text-[10px] md:text-xs text-muted-foreground mb-0.5 md:mb-1">Periode</label>
+              <label className="text-[10px] md:text-xs text-muted-foreground mb-0.5 md:mb-1">期間</label>
               <DateFilter />
             </div>
           </div>
@@ -102,7 +102,7 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout}>
-              Logout
+              ログアウト
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

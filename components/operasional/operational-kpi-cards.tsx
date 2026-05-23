@@ -48,7 +48,12 @@ export function OperationalKPICard({
                   <ListFilter className={cn("hidden h-4 w-4", isSidebarOpen && "xl:block")} />
                </SelectTrigger>
                <SelectContent>
-                 <SelectItem value="semua-unit">Semua Unit</SelectItem>
+                 <SelectItem value="semua-unit">全診療科</SelectItem>
+                 <SelectItem value="naika">内科</SelectItem>
+                 <SelectItem value="geka">外科</SelectItem>
+                 <SelectItem value="seikei">整形外科</SelectItem>
+                 <SelectItem value="junkan">循環器内科</SelectItem>
+                 <SelectItem value="sanka">産婦人科</SelectItem>
                </SelectContent>
              </Select>
             ) : (

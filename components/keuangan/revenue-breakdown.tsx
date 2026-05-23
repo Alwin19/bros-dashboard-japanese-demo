@@ -23,29 +23,25 @@ interface RevenueBreakdownProps {
 
 const chartConfig = {
   pendapatan: {
-    label: "Pendapatan",
+    label: "収益",
     color: "var(--chart-1)",
   },
   value: {
-    label: "Pendapatan",
+    label: "収益",
     color: "var(--chart-1)",
   },
 }
 
-// Fallback formatter (always available in client)
-const toIDRScale = (value: number) => {
-  if (value >= 1000000000) {
-    return `${(value / 1000000000).toFixed(1)} M`; // Miliar
-  } else if (value >= 1000000) {
-    return `${(value / 1000000).toFixed(1)} Jt`; // Juta
-  } else if (value >= 1000) {
-    return `${(value / 1000).toFixed(0)} Rb`; // Ribu
-  }
-  return value.toString();
+const toJPYScale = (value: number) => {
+  const absValue = Math.abs(value);
+  const sign = value < 0 ? '-' : '';
+  if (absValue >= 100000000) return `${sign}${(absValue / 100000000).toFixed(1)}億`;
+  if (absValue >= 10000) return `${sign}${Math.round(absValue / 10000)}万`;
+  return `${sign}${absValue.toLocaleString('ja-JP')}`;
 };
 
 export function RevenueBreakdown({ data }: RevenueBreakdownProps) {
-  
+
   const tertinggiData = data?.tertinggi || []
   const terendahData = data?.terendah || []
   const trendData = data?.trend || []
@@ -53,95 +49,95 @@ export function RevenueBreakdown({ data }: RevenueBreakdownProps) {
   return (
     <Card className="h-full">
       <CardHeader className="pb-3">
-        <CardTitle className="text-base md:text-lg font-semibold">Breakdown Pendapatan JKN</CardTitle>
+        <CardTitle className="text-base md:text-lg font-semibold">健保収益内訳</CardTitle>
       </CardHeader>
       <CardContent className="h-full pb-0">
         <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
 
-          {/* Tertinggi Chart */}
+          {/* Top Revenue Chart */}
           <div className="flex-1 min-w-0 flex flex-col justify-between">
             <h4 className="text-xs md:text-sm font-medium mb-3 md:mb-4 text-muted-foreground">
-              Pendapatan JKN Tertinggi
+              収益上位科
             </h4>
             {tertinggiData.length > 0 ? (
               <ChartContainer config={chartConfig} className="w-full h-[280px]">
                 <BarChart
-                  data={tertinggiData} 
-                  layout="vertical" 
+                  data={tertinggiData}
+                  layout="vertical"
                   margin={{ top: 0, right: 10, left: -10, bottom: 0}}
                 >
                   <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} />
-                  <XAxis 
-                    type="number" 
-                    tickFormatter={toIDRScale}
+                  <XAxis
+                    type="number"
+                    tickFormatter={toJPYScale}
                     tick={{ fontSize: 10 }}
                   />
-                  <YAxis 
-                    dataKey="category" 
-                    type="category" 
+                  <YAxis
+                    dataKey="category"
+                    type="category"
                     width={100}
                     tick={{ fontSize: 11 }}
                   />
-                  <ChartTooltip 
-                    content={<ChartTooltipContent 
+                  <ChartTooltip
+                    content={<ChartTooltipContent
                       formatter={(value, name, props) => props.payload.formattedValue}
-                    />} 
+                    />}
                   />
-                  <Bar 
-                    dataKey="value" 
-                    fill="var(--color-pendapatan)" 
-                    radius={[0, 4, 4, 0]} 
-                    barSize={25}
-                  />
-                </BarChart>
-              </ChartContainer>
-            ) : (
-              <div className="flex items-center justify-center w-full h-[200px] bg-muted/20 rounded-md">
-                <p className="text-sm text-muted-foreground">Tidak ada data</p>
-              </div>
-            )}
-          </div>
-
-          {/* Terendah Chart */}
-          <div className="flex-1 min-w-0 flex flex-col justify-between">
-            <h4 className="text-xs md:text-sm font-medium mb-3 md:mb-4 text-muted-foreground">
-              Pendapatan JKN Terendah
-            </h4>
-            {terendahData.length > 0 ? (
-              <ChartContainer config={chartConfig} className="w-full h-[280px]">
-                <BarChart 
-                  data={terendahData} 
-                  layout="vertical" 
-                  margin={{ top: 0, right: 10, left: -10, bottom: 0}}
-                >
-                  <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} />
-                  <XAxis 
-                    type="number" 
-                    tickFormatter={toIDRScale}
-                    tick={{ fontSize: 10 }}
-                  />
-                  <YAxis 
-                    dataKey="category" 
-                    type="category" 
-                    width={100}
-                    tick={{ fontSize: 11 }}
-                  />
-                  <ChartTooltip 
-                    content={<ChartTooltipContent 
-                      formatter={(value, name, props) => props.payload.formattedValue}
-                    />} 
-                  />
-                  <Bar 
-                    dataKey="value" 
-                    fill="var(--color-pendapatan)" 
+                  <Bar
+                    dataKey="value"
+                    fill="var(--color-pendapatan)"
                     radius={[0, 4, 4, 0]}
                     barSize={25}
                   />
                 </BarChart>
               </ChartContainer>
             ) : (
-            <div className="flex items-center justify-center w-full h-[200px] bg-muted/20 rounded-md">
-                <p className="text-sm text-muted-foreground">Tidak ada data</p>
+              <div className="flex items-center justify-center w-full h-[200px] bg-muted/20 rounded-md">
+                <p className="text-sm text-muted-foreground">データなし</p>
+              </div>
+            )}
+          </div>
+
+          {/* Bottom Revenue Chart */}
+          <div className="flex-1 min-w-0 flex flex-col justify-between">
+            <h4 className="text-xs md:text-sm font-medium mb-3 md:mb-4 text-muted-foreground">
+              収益下位科
+            </h4>
+            {terendahData.length > 0 ? (
+              <ChartContainer config={chartConfig} className="w-full h-[280px]">
+                <BarChart
+                  data={terendahData}
+                  layout="vertical"
+                  margin={{ top: 0, right: 10, left: -10, bottom: 0}}
+                >
+                  <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} />
+                  <XAxis
+                    type="number"
+                    tickFormatter={toJPYScale}
+                    tick={{ fontSize: 10 }}
+                  />
+                  <YAxis
+                    dataKey="category"
+                    type="category"
+                    width={100}
+                    tick={{ fontSize: 11 }}
+                  />
+                  <ChartTooltip
+                    content={<ChartTooltipContent
+                      formatter={(value, name, props) => props.payload.formattedValue}
+                    />}
+                  />
+                  <Bar
+                    dataKey="value"
+                    fill="var(--color-pendapatan)"
+                    radius={[0, 4, 4, 0]}
+                    barSize={25}
+                  />
+                </BarChart>
+              </ChartContainer>
+            ) : (
+              <div className="flex items-center justify-center w-full h-[200px] bg-muted/20 rounded-md">
+                <p className="text-sm text-muted-foreground">データなし</p>
               </div>
             )}
           </div>
@@ -149,35 +145,39 @@ export function RevenueBreakdown({ data }: RevenueBreakdownProps) {
           {/* Trend Chart */}
           <div className="flex-1 min-w-0 lg:flex-[2] flex flex-col">
             <div className="flex justify-between mb-3 md:mb-4">
-              <h4 className="text-xs md:text-sm font-medium text-muted-foreground">Tren</h4>
+              <h4 className="text-xs md:text-sm font-medium text-muted-foreground">トレンド</h4>
               <Select defaultValue="semua-unit">
                 <SelectTrigger className="w-24 md:w-28 text-xs">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="semua-unit">Semua Unit</SelectItem>
-                  <SelectItem value="rawat-inap">Rawat Inap</SelectItem>
+                  <SelectItem value="semua-unit">全診療科</SelectItem>
+                  <SelectItem value="naika">内科</SelectItem>
+                  <SelectItem value="geka">外科</SelectItem>
+                  <SelectItem value="seikei">整形外科</SelectItem>
+                  <SelectItem value="junkan">循環器内科</SelectItem>
+                  <SelectItem value="sanka">産婦人科</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             {trendData.length > 0 ? (
               <ChartContainer config={chartConfig} className="w-full h-[280px]">
-                <LineChart 
+                <LineChart
                   data={trendData}
                   margin={{ top: 0, right: 10, left: -10, bottom: 0}}
                 >
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                  <XAxis 
-                    dataKey="date" 
+                  <XAxis
+                    dataKey="date"
                     tick={{ fontSize: 10 }}
                     tickMargin={5}
                   />
-                  <YAxis 
-                    tickFormatter={toIDRScale}
+                  <YAxis
+                    tickFormatter={toJPYScale}
                     tick={{ fontSize: 10 }}
                   />
-                  <ChartTooltip 
-                    content={<ChartTooltipContent 
+                  <ChartTooltip
+                    content={<ChartTooltipContent
                       formatter={(value, name, props) => props.payload.formattedValue}
                       labelFormatter={(label, payload) => {
                         if (payload && payload.length > 0) {
@@ -185,12 +185,12 @@ export function RevenueBreakdown({ data }: RevenueBreakdownProps) {
                         }
                         return label
                       }}
-                    />} 
+                    />}
                   />
-                  <Line 
+                  <Line
                     type="monotone"
-                    dataKey="value" 
-                    stroke="var(--color-value)" 
+                    dataKey="value"
+                    stroke="var(--color-value)"
                     strokeWidth={2}
                     dot={false}
                   />
@@ -198,7 +198,7 @@ export function RevenueBreakdown({ data }: RevenueBreakdownProps) {
               </ChartContainer>
             ) : (
               <div className="flex items-center justify-center w-full h-[200px] bg-muted/20 rounded-md">
-                <p className="text-sm text-muted-foreground">Tidak ada data</p>
+                <p className="text-sm text-muted-foreground">データなし</p>
               </div>
             )}
           </div>

@@ -16,19 +16,18 @@ import {
 
 const sidebarItems = [
   {
-    title: "Keuangan",
+    title: "財務",
     url: "/dashboard/keuangan",
     icon: DollarSign,
   },
   {
-    title: "Operasional", // Fixed spelling to match folder name if intended
+    title: "業務",
     url: "/dashboard/operasional",
     icon: Users,
   },
 ]
 
 export function DashboardSidebar() {
-  // 2. Get current path to determine active state
   const pathname = usePathname()
 
   return (
@@ -40,7 +39,7 @@ export function DashboardSidebar() {
           </div>
           <div>
             <h1 className="text-xs font-semibold">BROS</h1>
-            <p className="text-md font-semibold">Dashboard Eksekutif</p>
+            <p className="text-md font-semibold">経営ダッシュボード</p>
           </div>
         </div>
       </SidebarHeader>
@@ -49,12 +48,10 @@ export function DashboardSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {sidebarItems.map((item) => {
-                // 3. Check if current path matches item url
                 const isActive = pathname.startsWith(item.url)
-                
+
                 return (
                   <SidebarMenuItem key={item.title}>
-                    {/* 4. Use asChild + Link for navigation */}
                     <SidebarMenuButton isActive={isActive} asChild>
                       <Link href={item.url}>
                         <item.icon />

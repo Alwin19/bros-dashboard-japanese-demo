@@ -17,7 +17,7 @@ export function RevenueReceipts({ data }: RevenueReceiptsProps) {
   return (
     <Card className="h-full flex flex-col">
       <CardHeader>
-        <CardTitle className="text-base sm:text-lg font-semibold">Penerimaan JKN</CardTitle>
+        <CardTitle className="text-base sm:text-lg font-semibold">健保受取</CardTitle>
       </CardHeader>
       <CardContent className="flex-1 flex flex-col items-center overflow-hidden">
         {receipts.length > 0 ? (
@@ -26,10 +26,10 @@ export function RevenueReceipts({ data }: RevenueReceiptsProps) {
               <TableHeader>
                 <TableRow className="bg-primary hover:bg-primary">
                   <TableHead className="text-primary-foreground font-semibold text-sm sm:text-base lg:text-[11px]">
-                    Metode
+                    方法
                   </TableHead>
                   <TableHead className="text-primary-foreground font-semibold text-right text-sm sm:text-base lg:text-[11px]">
-                    Jumlah
+                    金額
                   </TableHead>
                 </TableRow>
               </TableHeader>
@@ -49,7 +49,7 @@ export function RevenueReceipts({ data }: RevenueReceiptsProps) {
           </div>
         ) : (
             <div className="flex items-center justify-center w-full h-[200px] bg-muted/20 rounded-md">
-              <p className="text-sm text-muted-foreground">Tidak ada data</p>
+              <p className="text-sm text-muted-foreground">データなし</p>
             </div>
         )}
       </CardContent>

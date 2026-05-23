@@ -28,7 +28,7 @@ export function PayerDistributionChart({ data }: PayerDistributionChartProps) {
   return (
     <Card className="h-full">
       <CardHeader className="pb-2">
-        <CardTitle className="text-base font-medium">Jenis Penanggung Biaya Pasien</CardTitle>
+        <CardTitle className="text-base font-medium">保険種別分布</CardTitle>
       </CardHeader>
       <CardContent>
          {pieData.length > 0 ? (
@@ -72,7 +72,7 @@ export function PayerDistributionChart({ data }: PayerDistributionChartProps) {
           </ChartContainer>
          ) : (
             <div className="flex items-center justify-center w-full h-[200px] bg-muted/20 rounded-md">
-                <p className="text-sm text-muted-foreground">Tidak ada data</p>
+                <p className="text-sm text-muted-foreground">データなし</p>
             </div>
          )}
       </CardContent>

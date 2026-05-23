@@ -6,7 +6,7 @@ import { RevenueReceipts } from "@/components/keuangan/revenue-receipts"
 import { getDashboardData } from "@/lib/api/dataFetcher"
 import { redirect } from "next/navigation"
 import { format } from "date-fns"
-import { id } from "date-fns/locale"
+import { ja } from "date-fns/locale"
 
 
 interface PageProps {
@@ -42,13 +42,13 @@ export default async function DashboardPage({ searchParams }: PageProps) {
   // const hospitalId = params.hospitalId || "1"
 
   const data = await getDashboardData(hospitalId, startDate, endDate, params.preset)
-  const formattedStartDate = format(new Date(startDate), "dd MMM yyyy", { locale: id })
-  const formattedEndDate = format(new Date(endDate), "dd MMM yyyy", { locale: id })
+  const formattedStartDate = format(new Date(startDate), "yyyy年MM月dd日", { locale: ja })
+  const formattedEndDate = format(new Date(endDate), "yyyy年MM月dd日", { locale: ja })
 
   return (
     <>
       <h2 className="text-sm text-muted-foreground">
-          Berdasarkan periode: {formattedStartDate} - {formattedEndDate}
+          対象期間：{formattedStartDate} - {formattedEndDate}
       </h2>
 
       <FinancialKPICards data={data.kpi} />

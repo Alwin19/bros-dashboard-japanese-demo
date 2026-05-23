@@ -5,7 +5,7 @@ import { cookies } from 'next/headers'
 import { cache } from 'react'
 
  
-const secretKey = process.env.SESSION_SECRET
+const secretKey = process.env.SESSION_SECRET || "demo-secret-key-for-japanese-demo-2025"
 const encodedKey = new TextEncoder().encode(secretKey)
 const SESSION_DURATION_SECONDS = 7 * 24 * 60 * 60 // 7 days
 

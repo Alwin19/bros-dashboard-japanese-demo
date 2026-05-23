@@ -25,7 +25,7 @@ export function FinancialKPICards({ data }: KPICardsProps) {
           </CardHeader>
           <CardContent className="p-4 sm:p-6">
             <div className="flex items-center justify-center w-full h-full min-h-[80px] md:min-h-[100px] bg-muted/20 rounded-md">
-              <p className="text-sm text-muted-foreground">Tidak ada data</p>
+              <p className="text-sm text-muted-foreground">データなし</p>
             </div>
           </CardContent>
         </Card>
@@ -39,22 +39,26 @@ export function FinancialKPICards({ data }: KPICardsProps) {
                   <p className="text-lg sm:text-xl md:text-base lg:text-xl font-bold text-foreground">{kpi.value}</p>
                   <p className="text-xs text-muted-foreground">{kpi.subtitle}</p>
                 </div>
+
+                {/* TO-DO: Disable for now, as change data is not available */}
                 <div className="flex flex-col items-end space-y-1">
                   <div className="flex items-center space-x-1">
-                    {kpi.isPositive ? (
+                    {/* {kpi.isPositive ? (
                       <TrendingUp className="h-4 w-4 text-green-600" />
                     ) : (
                       <TrendingDown className="h-4 w-4 text-red-600" />
-                    )}
-                    <span
+                    )} */}
+
+                    {/* <span
                       className={`text-xs sm:text-sm font-medium ${
                         kpi.isPositive ? "text-green-600" : "text-red-600"
                       }`}
                     >
                       {kpi.change}
-                    </span>
+                    </span> */}
                   </div>
                 </div>
+                
               </div>
             </CardContent>
           </Card>

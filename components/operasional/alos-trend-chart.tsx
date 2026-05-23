@@ -23,13 +23,18 @@ export function ALOSTrendChart({ data }: ALOSTrendChartProps) {
   return (
     <Card className="h-full">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-base font-medium">Tren ALOS Tahunan</CardTitle>
+        <CardTitle className="text-base font-medium">年間ALOS推移</CardTitle>
         <Select defaultValue="semua-unit">
             <SelectTrigger className="w-[110px] h-8 text-xs">
                 <SelectValue />
             </SelectTrigger>
             <SelectContent>
-                <SelectItem value="semua-unit">Semua Unit</SelectItem>
+                <SelectItem value="semua-unit">全診療科</SelectItem>
+                <SelectItem value="naika">内科</SelectItem>
+                <SelectItem value="geka">外科</SelectItem>
+                <SelectItem value="seikei">整形外科</SelectItem>
+                <SelectItem value="junkan">循環器内科</SelectItem>
+                <SelectItem value="sanka">産婦人科</SelectItem>
             </SelectContent>
         </Select>
       </CardHeader>

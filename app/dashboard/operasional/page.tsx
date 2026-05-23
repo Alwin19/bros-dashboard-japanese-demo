@@ -6,7 +6,7 @@ import { VisitTrendChart } from "@/components/operasional/visit-trend-chart"
 import { PayerDistributionChart } from "@/components/operasional/payer-distribution-chart"
 import { Separator } from "@/components/ui/separator"
 import { format } from "date-fns"
-import { id } from "date-fns/locale"
+import { ja } from "date-fns/locale"
 
 interface PageProps {
   searchParams: Promise<{
@@ -35,8 +35,8 @@ export default async function OperasionalPage({ searchParams }: PageProps) {
   // Fetch data
   const data = await getOperationalData(hospitalId, startDate, endDate, params.preset)
 
-  const formattedStartDate = format(new Date(startDate), "dd MMM yyyy", { locale: id })
-  const formattedEndDate = format(new Date(endDate), "dd MMM yyyy", { locale: id })
+  const formattedStartDate = format(new Date(startDate), "yyyy年MM月dd日", { locale: ja })
+  const formattedEndDate = format(new Date(endDate), "yyyy年MM月dd日", { locale: ja })
 
   return (
     <div className="space-y-8">
@@ -67,7 +67,7 @@ export default async function OperasionalPage({ searchParams }: PageProps) {
       {/* Bottom Section: Period Data */}
       <div className="space-y-4">
         <h2 className="text-sm text-muted-foreground">
-          Berdasarkan periode: {formattedStartDate} - {formattedEndDate}
+          対象期間：{formattedStartDate} - {formattedEndDate}
         </h2>
 
         {/* ALOS KPI Row */}
